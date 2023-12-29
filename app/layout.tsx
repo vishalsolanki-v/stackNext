@@ -1,42 +1,45 @@
-import  { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 // eslint-disable-next-line camelcase
-import { Inter , Space_Grotesk } from 'next/font/google'
+import { Inter, Space_Grotesk } from 'next/font/google'
 import React from 'react'
 import type { Metadata } from 'next'
+import { ThemeProvider } from '@/context/ThemeProvider'
+
 const interFont = Inter({
-  subsets:['latin'],
-  weight:['100','200','300','400','500','600','700','800','900'],
-  variable:'--font-inter'
+  subsets: ['latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-inter'
 })
 const spaceGrotesk = Space_Grotesk({
-  subsets:['latin'],
-  weight:['300','400','500','600','700'],
-  variable:'--font-spaceGrotest'
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-spaceGrotest'
 })
-export const metadata:Metadata = {
-  title:'Vishal Dev Flow',
-  description:'hey there welcome to vishal dev flow',
-  icons:{
-    icon:'/public/assets/images/site-logo.svg'
+export const metadata: Metadata = {
+  title: 'Vishal Dev Flow',
+  description: 'hey there welcome to vishal dev flow',
+  icons: {
+    icon: '/public/assets/images/site-logo.svg'
   }
 }
-export default function RootLayout ({children}:{children:React.ReactNode}){
+export default function RootLayout({ children }: { children: React.ReactNode }) {
 
-return(
+  return (
 
-  <ClerkProvider appearance={{
-    elements:{
-      formButtonPrimary:'primary-gradient',
-      footerActionLink:'primary-text-gradient hover:text-primary-500'
-    }
-  }}>
-    
     <html lang='en'>
-<body className={`${interFont.variable} ${spaceGrotesk.variable}`}>
-{children}
-</body>
+      <ClerkProvider appearance={{
+        elements: {
+          formButtonPrimary: 'primary-gradient',
+          footerActionLink: 'primary-text-gradient hover:text-primary-500'
+        }
+      }}>
+        <ThemeProvider>
+          <body className={`${interFont.variable} ${spaceGrotesk.variable}`}>
+            {children}
+          </body>
+        </ThemeProvider>
+      </ClerkProvider>
     </html>
-  </ClerkProvider>
-)
+  )
 }

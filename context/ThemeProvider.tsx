@@ -9,21 +9,20 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [mode, setMode] = useState('')
     const handleThemeProvider = () => {
-        if (mode === 'dark') {
-            setMode('light');
-            document.documentElement.classList.add('light')
+        if (localStorage.theme === 'dark' || 
+        (!("theme" in localStorage)&&window.matchMedia("(prefers-color-scheme):dark").matches)) {
+            setMode('dark');
+            document.documentElement.classList.add('dark')
         }
         else {
-            setMode('dark');
-            document.documentElement.classList.add('dark');
+            setMode('light');
+            document.documentElement.classList.remove('dark');
         }
     }
     useEffect(() => {
-
         handleThemeProvider();
-
     }, [mode])
-
+    console.info(mode,'mdoe',window.matchMedia("(prefers-color-scheme):dark").matches)
     return (
         <ThemeContext.Provider value={{ mode, setMode }}>{children}</ThemeContext.Provider>
     )

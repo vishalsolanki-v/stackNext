@@ -7,39 +7,39 @@ import type { Metadata } from 'next'
 import { ThemeProvider } from '@/context/ThemeProvider'
 
 const interFont = Inter({
-  subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-inter'
+    subsets: ['latin'],
+    weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+    variable: '--font-inter'
 })
 const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-spaceGrotest'
+    subsets: ['latin'],
+    weight: ['300', '400', '500', '600', '700'],
+    variable: '--font-spaceGrotest'
 })
 export const metadata: Metadata = {
-  title: 'Vishal Dev Flow',
-  description: 'hey there welcome to vishal dev flow',
-  icons: {
-    icon: '/public/assets/images/site-logo.svg'
-  }
+    title: 'Vishal Dev Flow',
+    description: 'hey there welcome to vishal dev flow',
+    icons: {
+        icon: '/public/assets/images/site-logo.svg'
+    }
 }
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
-  return (
+    return (
 
-    <html lang='en'>
-      <ClerkProvider appearance={{
-        elements: {
-          formButtonPrimary: 'primary-gradient',
-          footerActionLink: 'primary-text-gradient hover:text-primary-500'
-        }
-      }}>
-        <ThemeProvider>
-          <body className={`${interFont.variable} ${spaceGrotesk.variable}`}>
-            {children}
-          </body>
-        </ThemeProvider>
-      </ClerkProvider>
-    </html>
-  )
+        <html lang='en'>
+            <ClerkProvider appearance={{
+                elements: {
+                    formButtonPrimary: 'primary-gradient',
+                    footerActionLink: 'primary-text-gradient hover:text-primary-500'
+                }
+            }}>
+                <ThemeProvider>
+                    <body className={`${interFont.variable} ${spaceGrotesk.variable}`}>
+                        {children}
+                    </body>
+                </ThemeProvider>
+            </ClerkProvider>
+        </html>
+    )
 }

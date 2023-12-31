@@ -1,3 +1,19 @@
 {
-  "extends": ["next/core-web-vitals", "standard", "plugin:tailwindcss/recommended", "prettier"]
+  "extends": ["next/core-web-vitals", "standard", "plugin:tailwindcss/recommended", "prettier"],
+  "rules": {
+    "linebreak-style" : 0,
+    "max-len": ["error", { "code": 130 }],
+        "indent": ["error", 4],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+        "import/prefer-default-export": "off",
+        "jsx-a11y/label-has-associated-control": "off",
+        "/opt/atlassian/pipelines/agent/build" : "off",
+        "jsx-a11y/label-has-for": "off",
+        "@next/next/no-img-element": "off",
+        "@next/next/no-html-link-for-pages": "off",
+        "jsx-a11y/alt-text": "off",
+        "import/no-anonymous-default-export": "off",
+        "react-hooks/exhaustive-deps": "off"
+  }
 }

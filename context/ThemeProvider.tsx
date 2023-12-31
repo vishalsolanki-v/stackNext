@@ -22,7 +22,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         handleThemeProvider();
     }, [mode])
-    console.info(mode,'mdoe',window.matchMedia("(prefers-color-scheme):dark").matches)
     return (
         <ThemeContext.Provider value={{ mode, setMode }}>{children}</ThemeContext.Provider>
     )

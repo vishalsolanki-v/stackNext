@@ -22,7 +22,7 @@ const DesktopLeftbar = () => {
                             'text-dark300_light900'} flex items-center justify-start gap-4 bg-transparent p-4`}>
                             <Image className={`${isActive?"":"invert-colors"}`} 
                                 src={item.imgURL} alt={item.label} width={20} height={20}/>
-                            <p className={`${isActive? 'base-bold':'base-medium'}`}>{item.label}</p> 
+                            <p className={`${isActive? 'base-bold':'base-medium'} max-lg:hidden`}>{item.label}</p> 
                         </Link>
                     )})}
             </div> 
@@ -31,13 +31,17 @@ const DesktopLeftbar = () => {
                     <Link href='/signin'>
                         <Button className='small-medium btn-secondary
                                      min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none'>
-                            <span className='primary-text-gradient'>Log In</span>
+                            <Image src='/assets/icons/account.svg' alt='login' height={20} width={20}
+                                className='invert-colors lg:hidden'/>
+                            <span className='primary-text-gradient max-lg:hidden'>Log In</span>
                         </Button>
                     </Link>
                     <Link href='/signup'>
                         <Button className='small-medium btn-tertiary light-border-2
                                      text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none'>
-                            Sign Up
+                            <Image src='/assets/icons/sign-up.svg' alt='signup' height={20} width={20}
+                                className='invert-colors lg:hidden'/>
+                            <span className='max-lg:hidden'>Sign In</span>
                         </Button>
                     </Link>
                 </div>

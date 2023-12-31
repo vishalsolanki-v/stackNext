@@ -1,4 +1,5 @@
 import DesktopLeftbar from "@/components/shared/navbar/DesktopLeftbar";
+import DesktopRightbar from "@/components/shared/navbar/DesktopRightbar";
 import Navbar from "@/components/shared/navbar/Navbar";
 import React from "react";
 const Layout = ({children}:{children:React.ReactNode})=>{
@@ -12,7 +13,7 @@ const Layout = ({children}:{children:React.ReactNode})=>{
                         {children}
                     </div>
                 </section>
-                RightSidebar
+                <DesktopRightbar/>
             </div>
             Toaster
         </main>

@@ -5,24 +5,24 @@ import RenderTags from '../RenderTags'
 
 const DesktopRightbar = () => {
     const topQuetion=[
-        {_id:1,title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'},
-        { _id:2,title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.' },
+        { _id: "1", title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.' },
+        { _id: "2", title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.' },
         {
-            _id:3,title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
+            _id: "3", title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
         },
         {
-            _id:4,title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
+            _id: "4", title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
         },
         {
-            _id:5,title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
+            _id: "5", title: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
         }
     ]
     const popularTags = [
-        {_id:1,name:'Javascript',totalQuestions:35},
-        {_id:2,name:'Next Js',totalQuestions:15},
-        {_id:3,name:'React Js',totalQuestions:25},
-        {_id:4,name:'Typescript',totalQuestions:10},
-        {_id:5,name:'Redux',totalQuestions:5},
+        {_id:"1",name:'Javascript',totalQuestions:35},
+        {_id:"2",name:'Next Js',totalQuestions:15},
+        {_id:"3",name:'React Js',totalQuestions:25},
+        {_id:"4",name:'Typescript',totalQuestions:10},
+        {_id:"5",name:'Redux',totalQuestions:5},
     ]
     return (
         <section className='custom-scrollbar background-light900_dark200 light-border sticky right-0 top-0

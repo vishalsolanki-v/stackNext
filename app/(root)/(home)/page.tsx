@@ -1,10 +1,55 @@
 import HomeFilters from "@/components/Home/HomeFilters";
+import QuestionCard from "@/components/card/QuestionCard";
+import NoResult from "@/components/shared/NoResult";
 import SharedFilter from "@/components/shared/SharedFilter";
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constant/filters";
 import Link from "next/link";
 import React from "react";
+
+const Questions = [
+    {
+        _id: "1",
+        author: {
+            _id: "author1",
+            name: "John Doe",
+            picture: "url_to_author_picture1",
+        },
+        answer: [
+            { text: "This is the first answer.", author: "answerAuthor1" },
+            { text: "Another answer here.", author: "answerAuthor2" },
+        ],
+        views: 1484344,
+        upvotes: 343,
+        tags: [
+            { _id: "tag1", name: "JavaScript" },
+            { _id: "tag2", name: "TypeScript" },
+        ],
+        title: "How to use TypeScript with React?",
+        createdAt: new Date("2024-01-11T12:00:00Z"),
+    },
+    {
+        _id: "2",
+        author: {
+            _id: "author2",
+            name: "Jane Smith",
+            picture: "url_to_author_picture2",
+        },
+        answer: [
+            { text: "Answering the second question.", author: "answerAuthor3" },
+        ],
+        views: 75,
+        upvotes: 8,
+        tags: [
+            { _id: "tag3", name: "Node.js" },
+            { _id: "tag4", name: "Express" },
+        ],
+        title: "How to create a RESTful API with Node.js and Express?",
+        createdAt: new Date("2024-01-10T15:30:00Z"),
+    },
+]
+
 export default function Home() {
     return (
         <>
@@ -29,6 +74,23 @@ export default function Home() {
                 
             </div>
             <HomeFilters/>
+            <div className="mt-10 flex w-full flex-col gap-6 ">
+                {Questions.length > 0 ? 
+                    Questions.map((item)=>(
+                        <QuestionCard key={item._id}
+                            _id={item._id}
+                            title={item.title}
+                            tags={item.tags}
+                            author={item.author}
+                            upvotes={item.upvotes}
+                            views={item.views}
+                            answer={item.answer}
+                            createdAt={item.createdAt}
+                        />
+                    )) : <NoResult title="There&apos;s no question to show" description="be the first to break the silence! 
+                🚀 Ask a question and Kickstart the Discussion.our Query could be the next big thing others could learn from.
+                 Get Involved! 💡" link="/ask-question" linkTitle="Ask A Question"/>}
+            </div>
         </>
     )
 }

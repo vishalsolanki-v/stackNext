@@ -47,10 +47,11 @@ const Question = ({mongoUserId}:QuestionT) => {
         try {
             // add api 
             await createQuestion({
-                title:values.title,
-                content:values.explanation,
-                tags:values.tags,
-                author: JSON.parse(mongoUserId),
+                title: values?.title,
+                content: values?.explanation,
+                tags: values?.tags,
+                author: JSON.parse(mongoUserId || ''),
+                path: pathName
             })
             router.push('/')
         } catch (error) {
@@ -59,7 +60,6 @@ const Question = ({mongoUserId}:QuestionT) => {
         finally{
             setIsSubmitting(false)
         }
-        // console.log(values)
     }
 
     const generateTagsHandle = (e:React.KeyboardEvent<HTMLInputElement>,field:any) => {

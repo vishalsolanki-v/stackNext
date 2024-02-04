@@ -19,11 +19,15 @@ import { QuestionSchema } from '@/lib/validations'
 import { Badge } from '../ui/badge';
 import Image from 'next/image';
 import { createQuestion } from '@/lib/actions/question.action';
-
-
-const type = 'edit'
-const Question = () => {
+import { usePathname, useRouter } from 'next/navigation';
+const type:string = ''
+interface QuestionT {
+    mongoUserId:string;
+}
+const Question = ({mongoUserId}:QuestionT) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const router =  useRouter();
+    const pathName = usePathname();
     const editorRef = useRef(null);
     // 1. Define your form.
     const form = useForm<z.infer<typeof QuestionSchema>>({
@@ -42,14 +46,20 @@ const Question = () => {
         setIsSubmitting(true)
         try {
             // add api 
-            await createQuestion({tags:'tags'})
+            await createQuestion({
+                title:values.title,
+                content:values.explanation,
+                tags:values.tags,
+                author: JSON.parse(mongoUserId),
+            })
+            router.push('/')
         } catch (error) {
           
         }
         finally{
             setIsSubmitting(false)
         }
-        console.log(values)
+        // console.log(values)
     }
 
     const generateTagsHandle = (e:React.KeyboardEvent<HTMLInputElement>,field:any) => {

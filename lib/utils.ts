@@ -37,7 +37,7 @@ export const formatNumber = (number: number): string => {
     } else if (Math.abs(number) >= 1e3) {
         return (number / 1e3).toFixed(1) + 'K';
     } else {
-        return number.toString();
+        return number?.toString();
     }
 };
   

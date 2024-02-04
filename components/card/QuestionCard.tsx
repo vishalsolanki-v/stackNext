@@ -39,9 +39,9 @@ const QuestionCard = ({_id,author,answer,views,upvotes,tags,title,createdAt}:Que
                 <Metrix
                     imgUrl="/assets/icons/avatar.svg"
                     alt="User"
-                    value={author.name}
+                    value={author?.name}
                     title={` - asked ${convertTime(createdAt)}`}
-                    href={`/profile/${author._id}`}
+                    href={`/profile/${author?._id}`}
                     isAuthor
                     textStyles="body-medium text-dark400_light700"
                 />
@@ -55,7 +55,7 @@ const QuestionCard = ({_id,author,answer,views,upvotes,tags,title,createdAt}:Que
                 <Metrix
                     imgUrl="/assets/icons/message.svg"
                     alt="message"
-                    value={formatNumber(answer.length)}
+                    value={formatNumber(answer?.length)}
                     title=" Answers"
                     textStyles="small-medium text-dark400_light800"
                 />

@@ -5,52 +5,14 @@ import SharedFilter from "@/components/shared/SharedFilter";
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constant/filters";
+import { getQuestion } from "@/lib/actions/question.action";
 import Link from "next/link";
 import React from "react";
 
-const Questions = [
-    {
-        _id: "1",
-        author: {
-            _id: "author1",
-            name: "John Doe",
-            picture: "url_to_author_picture1",
-        },
-        answer: [
-            { text: "This is the first answer.", author: "answerAuthor1" },
-            { text: "Another answer here.", author: "answerAuthor2" },
-        ],
-        views: 1484344,
-        upvotes: 343,
-        tags: [
-            { _id: "tag1", name: "JavaScript" },
-            { _id: "tag2", name: "TypeScript" },
-        ],
-        title: "How to use TypeScript with React?",
-        createdAt: new Date("2024-01-11T12:00:00Z"),
-    },
-    {
-        _id: "2",
-        author: {
-            _id: "author2",
-            name: "Jane Smith",
-            picture: "url_to_author_picture2",
-        },
-        answer: [
-            { text: "Answering the second question.", author: "answerAuthor3" },
-        ],
-        views: 75,
-        upvotes: 8,
-        tags: [
-            { _id: "tag3", name: "Node.js" },
-            { _id: "tag4", name: "Express" },
-        ],
-        title: "How to create a RESTful API with Node.js and Express?",
-        createdAt: new Date("2024-01-10T15:30:00Z"),
-    },
-]
 
-export default function Home() {
+export default async function Home() {
+    const result = await getQuestion({});
+    const Questions = result?.questions;
     return (
         <>
             <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">

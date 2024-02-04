@@ -14,7 +14,6 @@ import { sidebarLinks } from '@/constant'
 import { usePathname } from 'next/navigation'
 const NavContent = ()=>{
     const pathName = usePathname();
-    console.info(pathName,'pathName')
     return(
         <section className='flex h-full flex-col gap-6 pt-16'>{
             sidebarLinks.map((item)=>{

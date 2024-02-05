@@ -29,6 +29,7 @@ const UserSchema = new Schema({
     saved: [{type:Schema.Types.ObjectId,ref:'Question'}],
     joinedAt: {type:Date,default:Date.now},
 })
-
+// from here this line models.User is telling me that from users query data will
+//  come 'User' has been changes to 'users'  by no idea why it has happen but it is happening
 const User = models.User || model('User',UserSchema);
 export default User;

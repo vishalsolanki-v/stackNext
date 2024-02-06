@@ -2,7 +2,7 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { createUser, updateUser } from '@/lib/actions/user.action'
+import { createUser, deleteUser, updateUser } from '@/lib/actions/user.action'
 import { NextResponse } from 'next/server'
  
 export async function POST(req: Request) {
@@ -81,6 +81,12 @@ export async function POST(req: Request) {
             path: `profile/${id}`
         })
         return NextResponse.json({message:'OK',user:mongoUser})
+    }
+    if(eventType === 'user.deleted'){
+        const {id} = evt.data;
+        // create user in database
+        const deletedUser = await deleteUser({clerkId:id!})
+        return NextResponse.json({message:'OK',user:deletedUser})
     }
     // console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
     // console.log('Webhook body:', body)

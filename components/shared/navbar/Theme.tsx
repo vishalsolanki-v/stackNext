@@ -13,7 +13,7 @@ import { themes } from '@/constant'
 
 
 const Theme = () => {
-    const {mode,setMode} = useTheme();
+    const {mode,setMode} = useTheme()!;
     return (<Menubar className="relative border-none bg-transparent shadow-none">
         <MenubarMenu>
             <MenubarTrigger className="data[state=open]:bg-light-900 dark:data[state=open]:bg-dark-200 focus:bg-light-900

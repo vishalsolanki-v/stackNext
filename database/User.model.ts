@@ -1,9 +1,9 @@
 import { Schema,models,model,Document } from "mongoose";
 
 export interface Iuser extends Document {
-clerkId: String;
-name: String;
-username : String;
+clerkId: string;
+name: string;
+username : string;
 email: string;
 password?: string;
 bio?: string;

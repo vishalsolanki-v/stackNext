@@ -74,7 +74,7 @@ export async function POST(req: Request) {
             clerkId: id,
             updateData: {
                 email: email_addresses[0].email_address,
-                name: `${first_name}+${last_name ? ` ${last_name}` : ''}`,
+                name: `${first_name} ${last_name ? ` ${last_name}` : ''}`,
                 username: username!,
                 picture: image_url,
                

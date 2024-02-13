@@ -30,6 +30,17 @@ export async function updateUser(params:UpdateUserParams){
     }
 }
 
+export async function getUsers(){
+    try {
+        connectToDatabase();
+        const allUsers = await User.find({});
+        return allUsers;
+    } catch (error) {
+       console.error(error)
+       throw error; 
+    }
+}
+
 export async function getUserById(params:GetUserByIdParams){
     try {
         connectToDatabase();

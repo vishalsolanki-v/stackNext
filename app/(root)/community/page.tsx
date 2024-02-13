@@ -1,41 +1,36 @@
 import LocalSearchBar from '@/components/shared/search/LocalSearchBar';
-import { getUsers } from '@/lib/actions/user.action'
-import React from 'react'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
+import { getAllUsers } from '@/lib/actions/user.action'
+import SharedFilter from '@/components/shared/SharedFilter';
+import { UserFilters } from '@/constant/filters';
+import Link from 'next/link';
+import UserCard from '@/components/card/userCard';
   
 const Page = async () => {
-    const allUsers = await getUsers();
+    const result = await getAllUsers({});
   return (
-    <><div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
-          <h1 className="h1-bold text-dark100_light900">All Users</h1>
-      </div><div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
-              <LocalSearchBar
-                  route="/"
-                  iconPosition="left"
-                  imgSrc="/assets/icons/search.svg"
-                  placeholder="Search by username..."
-                  otherClasses="flex-1" />
-              <div>
-                  <DropdownMenu>
-                      <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                          {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
-                          {/* <DropdownMenuSeparator /> */}
-                          {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
-                          <DropdownMenuItem>Billing</DropdownMenuItem>
-                          <DropdownMenuItem>Team</DropdownMenuItem>
-                          <DropdownMenuItem>Subscription</DropdownMenuItem>
-                      </DropdownMenuContent>
-                  </DropdownMenu>
-              </div>
-          </div></>
+   <>
+   <h1 className="h1-bold text-dark100_light900">All Users</h1> 
+                
+            <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
+                <LocalSearchBar
+                    route="/community"
+                    iconPosition="left"
+                    imgSrc="/assets/icons/search.svg"
+                    placeholder="Search by username..."
+                    otherClasses="flex-1"
+                />
+                <SharedFilter filters={UserFilters} otherClasses="min-h-[56px] sm:min-w-[170px]"
+                    /> 
+            </div>
+          <section className='mt-12 flex flex-wrap gap-4'>
+              {result?.Users?.length > 0 ? result?.Users?.map((user) => (
+                  <UserCard key={user._id} user={user}/>
+              )) : <div className='paragraph-regular text-darkk200_light800 mx-auto max-w-4xl text-center'>
+                 <p> No users yet</p>
+                 <Link href="/signup" className='mt-4 font-bold text-accent-blue'>Join to be the First Member</Link>
+              </div>}
+          </section>
+   </>
   )
 }
 

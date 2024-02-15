@@ -3,9 +3,9 @@ import { getAllUsers } from '@/lib/actions/user.action'
 import SharedFilter from '@/components/shared/SharedFilter';
 import { UserFilters } from '@/constant/filters';
 import Link from 'next/link';
-import UserCard from '@/components/card/userCard';
 import NoResult from '@/components/shared/NoResult';
 import TagCard from '@/components/card/TagCard';
+import { getAllTags } from '@/lib/actions/tags.action';
   
 const Page = async () => {
     const result = await getAllTags({});

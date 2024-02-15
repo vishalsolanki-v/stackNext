@@ -1,6 +1,9 @@
+import { getTopInteractiveTags } from '@/lib/actions/tags.action';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
+import { Badge } from '../ui/badge';
+import RenderTags from '../shared/RenderTags';
 interface userT{
     user:{
         _id:string;
@@ -10,7 +13,10 @@ interface userT{
     username:string;
     }
 }
-const UserCard = ({user}:userT) => {
+const UserCard = async ({user}:userT) => {
+
+const topInterActiveTags = await getTopInteractiveTags({userId:user._id})
+
   return (
     <Link href={`/profile/${user?.clerkId}`} className='shadow-light100_darknone w-full max-xs:min-w-full
     xs:w-[260px]'>
@@ -20,6 +26,16 @@ const UserCard = ({user}:userT) => {
 <div className='mt-4 text-center'>
     <h3 className='h3-bold text-dark200_light900 line-clamp-1'>{user?.name}</h3>
     <p className='body-regular text-dark500_light500 mt-2'>@{user?.username}</p>
+</div>
+<div className="mt-5">
+{topInterActiveTags!?.length > 0 ? <div className='flex items-center gap-2'>
+    {topInterActiveTags?.map((tag)=>(
+    <RenderTags key={tag?._id} _id={tag?._id} name={tag?.name}/>
+))}
+</div>
+
+:<Badge className='subtle-medium background-light800_dark300 text-light400_light500 rounded-md
+border-none px-4 py-2 uppercase'>No Tags Yet</Badge>}
 </div>
 </article>
     </Link>

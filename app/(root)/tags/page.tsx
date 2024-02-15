@@ -1,10 +1,8 @@
 import LocalSearchBar from '@/components/shared/search/LocalSearchBar';
-import { getAllUsers } from '@/lib/actions/user.action'
 import SharedFilter from '@/components/shared/SharedFilter';
 import { UserFilters } from '@/constant/filters';
 import Link from 'next/link';
 import NoResult from '@/components/shared/NoResult';
-import TagCard from '@/components/card/TagCard';
 import { getAllTags } from '@/lib/actions/tags.action';
   
 const Page = async () => {
@@ -26,7 +24,15 @@ const Page = async () => {
             </div>
           <section className='mt-12 flex flex-wrap gap-4'>
               {result?.tags?.length > 0 ? result?.tags?.map((tag) => (
-                  <TagCard key={tag._id} tag={tag}/>
+               <Link href={`/tags/${tag._id}`} key={tag._id} className='shadow-light100_darknone'>
+                <article className='background-light900_dark200 light-border flex w-full 
+                flex-col rounded-2xl border px-8 py-10 sm:w-[260px]'>
+                    <div className='background-light800_dark400 w-fit rounded-sm px-5 py-1.5'>
+                        <p className='paragraph-semibold text-dark300_light900'>{tag?.name}</p>
+                    </div>
+                    <p className='small-medium text-dark400_light500 mt-3.5'><span className='body-semibold primary-text-gradient mr-2.5'>{tag?.questions?.length}+</span> Questions</p>
+                </article>
+               </Link>
               )) : 
               <NoResult title="No Tags Found" description="It looks like there are no tags" link="/ask-question" linkTitle="Ask a Question"/>
               }

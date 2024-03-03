@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import Prism from 'prismjs'
 import parse from 'html-react-parser'
 import "prismjs/components/prism-python";
@@ -30,9 +30,12 @@ interface parseT{
 }
 
 const ParseHTML = ({data}:parseT) => {
-    Prism.highlightAll();
+    useEffect(() => {
+        Prism.highlightAll();
+    }, [])
+
   return (
-    <div>{parse(data)}</div>
+    <div className='text-dark200_light900'>{parse(data)}</div>
   )
 }
 

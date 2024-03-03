@@ -1,5 +1,7 @@
+import Answer from '@/components/forms/Answer';
 import Metrix from '@/components/shared/Metrix';
 import ParseHTML from '@/components/shared/ParseHTML';
+import RenderTags from '@/components/shared/RenderTags';
 import { getQuestionById } from '@/lib/actions/question.action'
 import { convertTime, formatNumber } from '@/lib/utils';
 import Image from 'next/image';
@@ -27,7 +29,7 @@ const result = await getQuestionById({questionId:params.id});
 VOATING
   </div>
 </div>
-<h2 className='h2-semibold text-dark200_light900 mt-3.5 w-full text-left'>{result?.title} </h2>
+<p className='h2-semibold text-dark200_light900 mt-3.5 w-full text-left'>{result?.title} </p>
 
     </div>
     <div className='mb-8 mt-5 flex flex-wrap gap-4'>
@@ -54,6 +56,12 @@ VOATING
                 />
     </div>
     <ParseHTML data={result?.content}/>
+    <div className='mt-8 flex flex-wrap gap-2'>
+      {result?.tags?.map((tag:any)=>(
+        <RenderTags _id={tag?._id} showCount={false} key={tag?._id} name={tag?.name} />
+      ))}
+    </div>
+    <Answer/>
     </>
   )
 }

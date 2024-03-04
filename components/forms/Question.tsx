@@ -20,12 +20,14 @@ import { Badge } from '../ui/badge';
 import Image from 'next/image';
 import { createQuestion } from '@/lib/actions/question.action';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTheme } from '@/context/ThemeProvider';
 const type:string = ''
 interface QuestionT {
     mongoUserId:string;
 }
 const Question = ({mongoUserId}:QuestionT) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const {mode} = useTheme()!;
     const router =  useRouter();
     const pathName = usePathname();
     const editorRef = useRef(null);
@@ -139,7 +141,9 @@ const Question = ({mongoUserId}:QuestionT) => {
                                         toolbar: 'undo redo | ' +
            'codesample bold italic forecolor | alignleft aligncenter ' +
            'alignright alignjustify | bullist numlist outdent indent | ',
-                                        content_style: 'body { font-family:Inter; font-size:16px }'
+                                        content_style: 'body { font-family:Inter; font-size:16px }',
+                                        skin:mode === 'dark' ? 'oxide-dark' : 'oxide',
+                                        content_css:mode === 'dark'?'dark':'light'
                                     }}
                                 />
                             </FormControl>

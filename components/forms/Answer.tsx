@@ -17,8 +17,15 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useTheme } from "@/context/ThemeProvider";
 import { Button } from "../ui/button";
 import Image from "next/image";
-
-const Answer = () => {
+import { createAnswer } from "@/lib/actions/answer.action";
+import { usePathname } from "next/navigation";
+interface AnswerT {
+  authorId:string,
+question:string,
+questionId:string,
+}
+const Answer = ({authorId,questionId,question}:AnswerT) => {
+  const pathname = usePathname()
   const [submitting, setSubmitting] = useState(false);
   const { mode } = useTheme()!;
   const editorRef = useRef(null);
@@ -28,8 +35,28 @@ const Answer = () => {
       answer: "",
     },
   });
-  const handleCreateAnswer = () => {
+  const handleCreateAnswer = async (values:z.infer<typeof AnswerSchema>) => {
     console.log("working");
+    setSubmitting(true);
+    try {
+      await createAnswer({
+        content: values.answer,
+        author: JSON.parse(authorId),
+        question: JSON.parse(questionId),
+        path: pathname,
+      })
+      form.reset();
+      if(editorRef.current){
+        const editor = editorRef.current as any;
+        editor.setContent('');
+      }
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+    finally{
+      setSubmitting(false)
+    }
   };
   return (
     <>
@@ -106,7 +133,7 @@ const Answer = () => {
           />
           <div className="flex justify-end">
             <Button
-              type="button"
+              type="submit"
               className="primary-gradient w-fit text-white"
               disabled={submitting}
             >

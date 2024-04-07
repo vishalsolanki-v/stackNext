@@ -1,4 +1,5 @@
 import Answer from '@/components/forms/Answer';
+import AllAnswers from '@/components/shared/AllAnswers';
 import Metrix from '@/components/shared/Metrix';
 import ParseHTML from '@/components/shared/ParseHTML';
 import RenderTags from '@/components/shared/RenderTags';
@@ -68,6 +69,9 @@ VOATING
         <RenderTags _id={tag?._id} showCount={false} key={tag?._id} name={tag?.name} />
       ))}
     </div>
+
+<AllAnswers questionId={result?._id} userId={JSON.stringify(mongoUser?._id)} totalAnswers={result?.answers?.length}/>
+
     <Answer question={result?.content} questionId={JSON.stringify(result?._id)} authorId={JSON.stringify(mongoUser?._id)}/>
     </>
   )

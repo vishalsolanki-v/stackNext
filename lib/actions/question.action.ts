@@ -3,7 +3,7 @@
 import Question from "@/database/Question.model";
 import { connectToDatabase } from "../mongoose"
 import Tag from "@/database/Tags.model";
-import { CreateQuestionParams, GetQuestionByIdParams, GetQuestionsParams } from "./shared.types";
+import { CreateQuestionParams, GetQuestionByIdParams, GetQuestionsParams, QuestionVoteParams } from "./shared.types";
 import User from "@/database/User.model";
 import { revalidatePath } from "next/cache";
 
@@ -63,4 +63,69 @@ try {
     console.info(error);
     throw error;
 }
-} 
+}
+
+export const upVoteQuestion = async (params: QuestionVoteParams) => {
+  try {
+    connectToDatabase();
+    const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+    // console.info(typeof questionId,'questionId')
+    let updateQuery = {};
+    if (hasupVoted) {
+      updateQuery = { $pull: { upvotes: userId } };
+    } else if (hasdownVoted) {
+      updateQuery = {
+        $pull: { downvotes: userId },
+        $push: { upvotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { upvotes: userId } };
+    }
+
+    const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
+      new: true,
+    });
+    console.info(question,'question')
+    if (!question) {
+      throw new Error("Question Not Found");
+    }
+    // reputations add user
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const downVoteQuestion = async (params:QuestionVoteParams)=>{
+    try {
+        connectToDatabase();
+        const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+        let updateQuery = {};
+        if(hasdownVoted){
+            updateQuery = {$pull:{downvotes:userId}}
+        }
+        else if(hasupVoted){
+            updateQuery={
+                $pull:{upvotes:userId},
+                $push:{downvotes:userId}
+            }
+        }else{
+            updateQuery = {addToSet:{downvotes:userId}}
+        }
+
+        const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
+            new: true,
+          });
+          if (!question) {
+            throw new Error("Question Not Found");
+          }
+          // reputations add user
+          revalidatePath(path);
+
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}

@@ -13,7 +13,7 @@ export const createAnswer = async(params:CreateAnswerParams) =>{
         await Question.findByIdAndUpdate(question,{
             $push:{answers:newAnswer._id}
         })
-        console.log(newAnswer,'newAnswer')
+        // console.log(newAnswer,'newAnswer')
         // TODO: Add interaction...
         revalidatePath(path);
     } catch (error) {

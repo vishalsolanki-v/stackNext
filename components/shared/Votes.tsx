@@ -1,6 +1,8 @@
 "use client"
+import { downVoteQuestion, upVoteQuestion } from '@/lib/actions/question.action';
 import { formatNumber } from '@/lib/utils';
 import Image from 'next/image';
+import { usePathname,useRouter } from 'next/navigation';
 import React from 'react'
 interface votesT {
     type: string;
@@ -13,13 +15,62 @@ interface votesT {
     hasSaved?: boolean;
 }
 const Votes = ({ type, userId, itemId, hasdownVoted, hasupVoted, upvotes, downvotes, hasSaved }: votesT) => {
-   const handleSave = ()=>{
+   const pathname = usePathname();
+   const router = useRouter();
+    const handleSave = ()=>{
 
    }
 
-   const handleVote = (action:string)=>{
-
-   }
+    const handleVote = async (action: string) => {
+        if (!userId) {
+            return;
+        }
+        // console.info(itemId,'itemId')
+        if (action === 'upvote') {
+            if (type === 'Question') {
+                await upVoteQuestion({
+                    questionId: JSON.parse(itemId),
+                    userId: JSON.parse(userId),
+                    hasupVoted,
+                    hasdownVoted,
+                    path: pathname
+                })
+            }
+            else if(type==='Answer'){
+                // await upVoteAnswer({
+                //     questionId: JSON.stringify(itemId),
+                //     userId: JSON.stringify(userId),
+                //     hasupVoted,
+                //     hasdownVoted,
+                //     path: pathname
+                // }) 
+            }
+//Todo: show toast
+            return;
+        }
+        if (action === 'downvote') {
+            if (type === 'Question') {
+                await downVoteQuestion({
+                    questionId: JSON.parse(itemId),
+                    userId: JSON.parse(userId),
+                    hasupVoted,
+                    hasdownVoted,
+                    path: pathname
+                })
+            }
+            else if(type==='Answer'){
+                // await downVoteAnswer({
+                //     questionId: JSON.stringify(itemId),
+                //     userId: JSON.stringify(userId),
+                //     hasupVoted,
+                //     hasdownVoted,
+                //     path: pathname
+                // }) 
+            }
+//Todo: show toast
+            return;
+        }
+    }
 
     return (
         <div className='flex gap-5'>

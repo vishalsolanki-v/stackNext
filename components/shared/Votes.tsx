@@ -1,5 +1,7 @@
 "use client"
+import { downVoteAnswer, upVoteAnswer } from '@/lib/actions/answer.action';
 import { downVoteQuestion, upVoteQuestion } from '@/lib/actions/question.action';
+import { toggleSavedQuestion } from '@/lib/actions/user.action';
 import { formatNumber } from '@/lib/utils';
 import Image from 'next/image';
 import { usePathname,useRouter } from 'next/navigation';
@@ -17,15 +19,18 @@ interface votesT {
 const Votes = ({ type, userId, itemId, hasdownVoted, hasupVoted, upvotes, downvotes, hasSaved }: votesT) => {
    const pathname = usePathname();
    const router = useRouter();
-    const handleSave = ()=>{
-
+    const handleSave = async()=>{
+        await toggleSavedQuestion({
+            questionId: JSON.parse(itemId),
+            userId: JSON.parse(userId),
+            path: pathname
+        })
    }
 
     const handleVote = async (action: string) => {
         if (!userId) {
             return;
         }
-        // console.info(itemId,'itemId')
         if (action === 'upvote') {
             if (type === 'Question') {
                 await upVoteQuestion({
@@ -37,13 +42,13 @@ const Votes = ({ type, userId, itemId, hasdownVoted, hasupVoted, upvotes, downvo
                 })
             }
             else if(type==='Answer'){
-                // await upVoteAnswer({
-                //     questionId: JSON.stringify(itemId),
-                //     userId: JSON.stringify(userId),
-                //     hasupVoted,
-                //     hasdownVoted,
-                //     path: pathname
-                // }) 
+                await upVoteAnswer({
+                    answerId: JSON.parse(itemId),
+                    userId: JSON.parse(userId),
+                    hasupVoted,
+                    hasdownVoted,
+                    path: pathname
+                })
             }
 //Todo: show toast
             return;
@@ -59,13 +64,13 @@ const Votes = ({ type, userId, itemId, hasdownVoted, hasupVoted, upvotes, downvo
                 })
             }
             else if(type==='Answer'){
-                // await downVoteAnswer({
-                //     questionId: JSON.stringify(itemId),
-                //     userId: JSON.stringify(userId),
-                //     hasupVoted,
-                //     hasdownVoted,
-                //     path: pathname
-                // }) 
+                await downVoteAnswer({
+                    answerId: JSON.parse(itemId),
+                    userId: JSON.parse(userId),
+                    hasupVoted,
+                    hasdownVoted,
+                    path: pathname
+                })
             }
 //Todo: show toast
             return;
@@ -100,11 +105,11 @@ const Votes = ({ type, userId, itemId, hasdownVoted, hasupVoted, upvotes, downvo
                     </div>
                 </div>
             </div>
-            <Image src={hasSaved ? '/assets/icons/star-filled.svg' : '/assets/icons/star-red.svg'}
-                        width={18} height={18} alt='star'
-                        className='cursor-pointer'
-                        onClick={handleSave}
-                    />
+            {type === 'Question' && <Image src={hasSaved ? '/assets/icons/star-filled.svg' : '/assets/icons/star-red.svg'}
+                width={18} height={18} alt='star'
+                className='cursor-pointer'
+                onClick={handleSave}
+            />}
         </div>
     )
 }

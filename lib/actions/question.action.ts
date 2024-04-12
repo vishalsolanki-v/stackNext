@@ -57,7 +57,6 @@ try {
    if(!question){
     return console.info('no question found')
    }
-   console.info(question)
    return question;
 } catch (error) {
     console.info(error);
@@ -85,7 +84,6 @@ export const upVoteQuestion = async (params: QuestionVoteParams) => {
     const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
       new: true,
     });
-    console.info(question,'question')
     if (!question) {
       throw new Error("Question Not Found");
     }

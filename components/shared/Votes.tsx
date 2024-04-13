@@ -1,11 +1,12 @@
 "use client"
 import { downVoteAnswer, upVoteAnswer } from '@/lib/actions/answer.action';
+import { viewQuestion } from '@/lib/actions/interaction.action';
 import { downVoteQuestion, upVoteQuestion } from '@/lib/actions/question.action';
 import { toggleSavedQuestion } from '@/lib/actions/user.action';
 import { formatNumber } from '@/lib/utils';
 import Image from 'next/image';
 import { usePathname,useRouter } from 'next/navigation';
-import React from 'react'
+import React, { useEffect } from 'react'
 interface votesT {
     type: string;
     userId: string;
@@ -19,6 +20,14 @@ interface votesT {
 const Votes = ({ type, userId, itemId, hasdownVoted, hasupVoted, upvotes, downvotes, hasSaved }: votesT) => {
    const pathname = usePathname();
    const router = useRouter();
+
+   useEffect(() => {
+ viewQuestion({
+    questionId:JSON.parse(itemId),
+    userId:userId ? JSON.parse(userId) : undefined
+   })
+   }, [itemId,userId,pathname,router])
+
     const handleSave = async()=>{
         await toggleSavedQuestion({
             questionId: JSON.parse(itemId),

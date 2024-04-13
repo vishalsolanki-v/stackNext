@@ -50,7 +50,7 @@ export async function getUserById(params:GetUserByIdParams){
         connectToDatabase();
         const {userId} = params;
         const user = await User.findOne({ clerkId : userId });
-        return user;  
+        return user;
     } catch (error) {
         console.info(error);
         throw error; 

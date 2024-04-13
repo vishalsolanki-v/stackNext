@@ -8,7 +8,7 @@ _id:string;
 author:{_id:string,name:string,picture:string};
 answer:Array<object>;
 views:number;
-upvotes:number;
+upvotes:string[];
 tags:{_id:string,name:string}[];
 title:string;
 createdAt:Date;
@@ -47,7 +47,7 @@ const QuestionCard = ({_id,author,answer,views,upvotes,tags,title,createdAt}:Que
                 <Metrix
                     imgUrl="/assets/icons/like.svg"
                     alt="UpVotes"
-                    value={formatNumber(upvotes)}
+                    value={formatNumber(upvotes?.length)}
                     title=" Votes"
                     textStyles="small-medium text-dark400_light800"
                 />

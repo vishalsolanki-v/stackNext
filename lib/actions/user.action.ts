@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import Question from "@/database/Question.model";
 import Tag from "@/database/Tags.model";
 import { FilterQuery } from "mongoose";
+import Answer from "@/database/Answer.model";
 
 export async function createUser(userData:CreateUserParams){
     try {
@@ -141,6 +142,23 @@ export async function getAllSavedQuestions(params: GetSavedQuestionsParams) {
     return { questions: savedQuestions };
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+export async function getUserInfo(params: GetUserByIdParams) {
+  try {
+    connectToDatabase();
+    const { userId } = params;
+    const user = await User.findOne({ clerkId: userId });
+    if (!user) {
+      return console.log("No User Found");
+    }
+    const totalQuestions = await Question.countDocuments({ author: user._id });
+    const totalAnswers = await Answer.countDocuments({ author: user._id });
+    return { user, totalQuestions, totalAnswers };
+  } catch (error) {
+    console.info(error);
     throw error;
   }
 }

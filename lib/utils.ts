@@ -40,3 +40,15 @@ export const formatNumber = (number: number): string => {
         return number?.toString();
     }
 };
+
+export function joinMonthAndYear(date: Date): string {
+    // Get the month and year from the Date object
+    const month = date?.toLocaleString('default',{ month :'long'}) // Months are zero-indexed, so we add 1
+    const year = date.getFullYear();
+
+    // Concatenate the month and year into a string
+    const joined = `${month} ${year}`;
+
+    return joined;
+}
+

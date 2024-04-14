@@ -1,7 +1,7 @@
 "use client"
 import { Button } from '@/components/ui/button';
 import { sidebarLinks } from '@/constant';
-import { SignedOut } from '@clerk/nextjs';
+import { SignedOut, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,6 +9,7 @@ import React from 'react'
 
 const DesktopLeftbar = () => {
     const pathName =  usePathname();
+const {userId} = useAuth();
     return (
         <section className='custom-scrollbar background-light900_dark200 light-border sticky left-0 top-0
          flex h-screen w-fit flex-col justify-between 
@@ -16,6 +17,14 @@ const DesktopLeftbar = () => {
             <div className="flex flex-1 flex-col gap-6"> 
                 { sidebarLinks.map((item)=>{
                     const isActive = (pathName.includes(item.route)&&item.route.length>1)||pathName === item.route;
+                    if (item?.route === '/profile') {
+                        if (userId) {
+                            item.route = `${item.route}/${userId}`
+                        }
+                        else {
+                            return null;
+                        }
+                    }
                     return (
                         <Link href={item.route} key={item.route} className={`${isActive?
                             'primary-gradient rounded-lg text-light-900':

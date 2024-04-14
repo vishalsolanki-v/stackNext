@@ -13,8 +13,14 @@ import React from "react";
 export default async function Home() {
     const result = await getQuestion({});
     const Questions = result?.questions;
+    const defaultSubject = encodeURIComponent('Regarding your portfolio'); // Subject of the email
+    const defaultMessage = encodeURIComponent('Hi Vishal,\n\n'); // Default message
+    const linkedInUrl = 'https://www.linkedin.com/in/vishal-solanki2000';
+   
     return (
         <>
+                <p className='paragraph-regular text-dark200_light800 text-justify mb-5'>Hi their! i hope you are doing good, If you come across any issues, don't worry; this project is currently in progress. However, I've implemented several exciting features, including question posting, answering, upvoting and downvoting, view count tracking, saving questions, user profile pages, tags pages, collections, and a community section. The application is also fully responsive. Feel free to log in and explore these features. If you have any questions or feedback, please don't hesitate to reach out to me at <Link href={`mailto:vishalthakur2463@gmail.com?subject=${defaultSubject}&body=${defaultMessage}`} 
+                className="text-blue-500">My Email</Link> or on <Link href={linkedInUrl} target="_blank" className="text-blue-500">Linkedin</Link> . Thank you.  </p>
             <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
                 <h1 className="h1-bold text-dark100_light900">All Question</h1> 
                 <Link href='/ask-question' className="flex justify-end max-sm:w-full">

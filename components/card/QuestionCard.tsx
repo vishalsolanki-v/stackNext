@@ -12,8 +12,9 @@ upvotes:string[];
 tags:{_id:string,name:string}[];
 title:string;
 createdAt:Date;
+clerkId?:string;
 }
-const QuestionCard = ({_id,author,answer,views,upvotes,tags,title,createdAt}:QuestionCartT) => {
+const QuestionCard = ({_id,author,answer,views,upvotes,tags,title,createdAt,clerkId}:QuestionCartT) => {
     return (
         <div className='card-wrapper rounded-[10px] p-9 sm:px-11'>
             <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row '>

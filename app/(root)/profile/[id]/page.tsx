@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { joinMonthAndYear } from '@/lib/utils'
 import ProfileLink from '@/components/shared/ProfileLink'
 import Stats from '@/components/shared/Stats'
-
+import QuestionTab from '@/components/shared/QuestionTab'
+import AnswerTab from '@/components/shared/AnswerTab'
 const Page = async ({ params, searchParams }: URLProps) => {
     const userInfo = await getUserInfo({ userId: params?.id })
     // console.log(result,'result')
@@ -73,8 +74,13 @@ const Page = async ({ params, searchParams }: URLProps) => {
                         <TabsTrigger value="top-posts" className='tab'>Top Posts</TabsTrigger>
                         <TabsTrigger value="answer" className='tab'>Answers</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="top-posts">Posts</TabsContent>
-                    <TabsContent value="answer">Answer</TabsContent>
+                    <TabsContent value="top-posts"><QuestionTab
+                    clerkId={userInfo?.user.clerkId}
+                    userId={userInfo?.user._id}
+                    searchParams={searchParams}
+
+                    /></TabsContent>
+                    <TabsContent value="answer"><AnswerTab/></TabsContent>
                 </Tabs>
 
             </div>

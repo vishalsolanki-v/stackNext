@@ -1,51 +1,73 @@
-import QuestionCard from "@/components/card/QuestionCard";
+import QuestionCard from "@/components/cards/QuestionCard";
+import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
-import SharedFilter from "@/components/shared/SharedFilter";
-import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
-import { QuestionFilters } from "@/constant/filters";
-import { getAllSavedQuestions, getUserById } from "@/lib/actions/user.action";
-import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import React from "react";
+import Pagination from "@/components/shared/Pagination";
+import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
+import { QuestionFilters } from "@/constants/filters";
+import { getSavedQuestions } from "@/lib/actions/user.action";
+import { SearchParamsProps } from "@/types";
+import { auth } from '@clerk/nextjs'
 
+export default async function Home({ searchParams }: SearchParamsProps) {
+  const { userId } = auth();
 
-export default async function Home() {
-    const {userId} = auth()
-    if(!userId) redirect('/sign-in');
-    const user = await getUserById({userId})
-    const result = await getAllSavedQuestions({clerkId:user.clerkId});
-    const Questions = result.questions;
-    return (
-        <>
-                <h1 className="h1-bold text-dark100_light900">Saved Question</h1>
-            <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
-                <LocalSearchBar
-                    route="/"
-                    iconPosition="left"
-                    imgSrc="/assets/icons/search.svg"
-                    placeholder="Search for Questions"
-                    otherClasses="flex-1"
-                />
-                <SharedFilter filters={QuestionFilters} otherClasses="min-h-[56px] sm:min-w-[170px]"
-                    />
-            </div>
-            <div className="mt-10 flex w-full flex-col gap-6 ">
-                {Questions.length > 0 ? 
-                    Questions.map((item:any)=>(
-                        <QuestionCard key={item._id}
-                            _id={item._id}
-                            title={item.title}
-                            tags={item.tags}
-                            author={item.author}
-                            upvotes={item.upvotes}
-                            views={item.views}
-                            answer={item.answer}
-                            createdAt={item.createdAt}
-                        />
-                    )) : <NoResult title="There&apos;s no Saved question to show" description="be the first to break the silence! 
-                🚀 Ask a question and Kickstart the Discussion.our Query could be the next big thing others could learn from.
-                 Get Involved! 💡" link="/ask-question" linkTitle="Ask A Question"/>}
-            </div>
-        </>
-    )
+  if(!userId) return null;
+
+  const result = await getSavedQuestions({
+    clerkId: userId,
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
+  });
+
+  return (
+    <>
+      <h1 className="h1-bold text-dark100_light900">Saved Questions</h1> 
+
+      <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
+        <LocalSearchbar 
+          route="/"
+          iconPosition="left"
+          imgSrc="/assets/icons/search.svg"
+          placeholder="Search for questions"
+          otherClasses="flex-1"
+        />
+
+        <Filter
+          filters={QuestionFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
+        />
+      </div>
+
+      <div className="mt-10 flex w-full flex-col gap-6">
+        {result.questions.length > 0 ?
+          result.questions.map((question: any) => (
+            <QuestionCard 
+              key={question._id}
+              _id={question._id}
+              title={question.title}
+              tags={question.tags}
+              author={question.author}
+              upvotes={question.upvotes}
+              views={question.views}
+              answers={question.answers}
+              createdAt={question.createdAt}
+            />
+          ))
+          : <NoResult 
+            title="There’s no question saved to show"
+            description="Be the first to break the silence! 🚀 Ask a Question and kickstart the discussion. our query could be the next big thing others learn from. Get involved! 💡"
+            link="/ask-question"
+            linkTitle="Ask a Question"
+          />}
+      </div>
+
+      <div className="mt-10">
+        <Pagination 
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={result.isNext}
+        />
+      </div>
+    </>
+  )
 }

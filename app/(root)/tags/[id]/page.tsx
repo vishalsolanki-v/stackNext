@@ -1,44 +1,62 @@
-import QuestionCard from '@/components/card/QuestionCard'
+import QuestionCard from '@/components/cards/QuestionCard'
 import NoResult from '@/components/shared/NoResult'
-import LocalSearchBar from '@/components/shared/search/LocalSearchBar'
-import { getQuestionByTagId } from '@/lib/actions/tags.action'
+import Pagination from '@/components/shared/Pagination'
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar'
+import { getQuestionsByTagId } from '@/lib/actions/tag.actions'
 import { URLProps } from '@/types'
-import React from 'react'
 
-const page = async ({params,searchParams}:URLProps) => {
-const result = await getQuestionByTagId({tagId:params.id,page:1,searchQuery:searchParams.q})
-const Questions = result?.questions
+const Page = async ({ params, searchParams }: URLProps) => {
+  const result = await getQuestionsByTagId({
+    tagId: params.id,
+    page: searchParams.page ? +searchParams.page : 1,
+    searchQuery: searchParams.q
+  })
+
   return (
     <>
-                <h1 className="h1-bold text-dark100_light900">{result?.tagTitle}</h1>
-            <div className="mt-11 w-full">
-                <LocalSearchBar
-                    route="/"
-                    iconPosition="left"
-                    imgSrc="/assets/icons/search.svg"
-                    placeholder="Search for Questions"
-                    otherClasses="flex-1"
-                />
-            </div>
-            <div className="mt-10 flex w-full flex-col gap-6 ">
-                {Questions.length > 0 ?
-                    Questions.map((item:any)=>(
-                        <QuestionCard key={item._id}
-                            _id={item._id}
-                            title={item.title}
-                            tags={item.tags}
-                            author={item.author}
-                            upvotes={item.upvotes}
-                            views={item.views}
-                            answer={item.answer}
-                            createdAt={item.createdAt}
-                        />
-                    )) : <NoResult title="There&apos;s no Tag question to show" description="be the first to break the silence! 
-                🚀 Ask a question and Kickstart the Discussion.our Query could be the next big thing others could learn from.
-                 Get Involved! 💡" link="/ask-question" linkTitle="Ask A Question"/>}
-            </div>
-        </>
+      <h1 className="h1-bold text-dark100_light900">{result.tagTitle}</h1> 
+
+      <div className="mt-11 w-full">
+        <LocalSearchbar 
+          route={`/tags/${params.id}`}
+          iconPosition="left"
+          imgSrc="/assets/icons/search.svg"
+          placeholder="Search tag questions"
+          otherClasses="flex-1"
+        />
+      </div>
+
+      <div className="mt-10 flex w-full flex-col gap-6">
+        {result.questions.length > 0 ?
+          result.questions.map((question: any) => (
+            <QuestionCard 
+              key={question._id}
+              _id={question._id}
+              title={question.title}
+              tags={question.tags}
+              author={question.author}
+              upvotes={question.upvotes}
+              views={question.views}
+              answers={question.answers}
+              createdAt={question.createdAt}
+            />
+          ))
+          : <NoResult 
+            title="There’s no tag question saved to show"
+            description="Be the first to break the silence! 🚀 Ask a Question and kickstart the discussion. our query could be the next big thing others learn from. Get involved! 💡"
+            link="/ask-question"
+            linkTitle="Ask a Question"
+          />}
+      </div>
+
+      <div className="mt-10">
+        <Pagination 
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={result.isNext}
+        />
+      </div>
+    </>
   )
 }
 
-export default page
+export default Page

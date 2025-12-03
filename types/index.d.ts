@@ -4,7 +4,6 @@ export interface SidebarLink {
   imgURL: string;
   route: string;
   label: string;
-  alt: string
 }
 
 export interface Job {

@@ -1,35 +1,45 @@
-import { SearchParams } from '@/lib/actions/shared.types'
-import { getUserQuestions } from '@/lib/actions/user.action'
+import { getUserQuestions } from '@/lib/actions/user.action';
 import { SearchParamsProps } from '@/types'
 import React from 'react'
-import QuestionCard from '../card/QuestionCard'
-interface QuestionT extends SearchParamsProps{
-userId:string,
-  clerkId?:string,
+import QuestionCard from '../cards/QuestionCard';
+import Pagination from './Pagination';
+
+interface Props extends SearchParamsProps {
+  userId: string;
+  clerkId?: string | null;
 }
-const QuestionTab = async ({searchParams,userId,clerkId}:QuestionT) => {
-  const result =  await getUserQuestions({
-    userId:userId,
-    page:1
+
+const QuestionTab = async ({ searchParams, userId, clerkId }: Props) => {
+  const result = await getUserQuestions({
+    userId,
+    page: searchParams.page ? +searchParams.page : 1,
   })
+
   return (
-   <>
-   {
-    result?.questions?.map(item=>(
-      <QuestionCard key={item._id}
-      _id={item._id}
-      clerkId={clerkId}
-      title={item.title}
-      tags={item.tags}
-      author={item.author}
-      upvotes={item.upvotes}
-      views={item.views}
-      answer={item.answer}
-      createdAt={item.createdAt}
-  />
-    ))
-   }
-   </>
+    <>
+      {result.questions.map((question) => (
+        <QuestionCard 
+          key={question._id}
+          _id={question._id}
+          clerkId={clerkId}
+          title={question.title}
+          tags={question.tags}
+          author={question.author}
+          upvotes={question.upvotes}
+          views={question.views}
+          answers={question.answers}
+          createdAt={question.createdAt}
+        />
+      ))}
+
+        <div className="mt-10">
+          <Pagination 
+            pageNumber={searchParams?.page ? +searchParams.page : 1}
+            isNext={result.isNextQuestions}
+          />
+
+        </div>
+    </>
   )
 }
 

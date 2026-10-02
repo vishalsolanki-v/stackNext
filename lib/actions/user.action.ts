@@ -4,6 +4,8 @@ import { FilterQuery, PipelineStage, Types } from "mongoose";
 
 import { Answer, Question, User } from "@/database";
 
+import { toggleSaveQuestion as toggleSaveQuestionInCollection } from "./collection.action";
+
 import {
   getFallbackUser,
   getFallbackUserAnswers,
@@ -23,6 +25,12 @@ import {
   PaginatedSearchParamsSchema,
   UpdateUserSchema,
 } from "../validations";
+
+export async function toggleSaveQuestion(
+  params: ToggleSaveQuestionParams
+): Promise<ActionResponse<{ saved: boolean }>> {
+  return toggleSaveQuestionInCollection(params);
+}
 
 export async function getUsers(params: PaginatedSearchParams): Promise<
   ActionResponse<{
@@ -132,6 +140,21 @@ export async function getUser(params: GetUserParams): Promise<
   } catch {
     return { success: true, data: { user: getFallbackUser(userId) } };
   }
+}
+
+export async function getUserById(
+  params: GetUserByIdParams
+): Promise<ActionResponse<User>> {
+  const result = await getUser(params as GetUserParams);
+
+  if (result && typeof result === "object" && "data" in result) {
+    return {
+      success: true,
+      data: (result as ActionResponse<{ user: User }>).data?.user,
+    };
+  }
+
+  return result as ErrorResponse;
 }
 
 export async function getUserQuestions(params: GetUserQuestionsParams): Promise<
@@ -396,6 +419,54 @@ export async function updateUser(
       success: true,
       data: { user: JSON.parse(JSON.stringify(updatedUser)) },
     };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function createUser(
+  params: CreateUserParams
+): Promise<ActionResponse<User>> {
+  try {
+    const existingUser = await User.findOne({ email: params.email });
+
+    if (existingUser) {
+      return { success: true, data: JSON.parse(JSON.stringify(existingUser)) };
+    }
+
+    const createdUser = await User.create({
+      clerkId: params.clerkId,
+      name: params.name,
+      username: params.username,
+      email: params.email,
+      image: params.picture,
+      reputation: 0,
+    });
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(createdUser)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteUser(
+  params: DeleteUserParams
+): Promise<ActionResponse> {
+  try {
+    const user = await User.findOne({
+      $or: [{ clerkId: params.clerkId }, { email: params.clerkId }, { username: params.clerkId }],
+    });
+
+    if (!user) {
+      return { success: true };
+    }
+
+    await User.deleteOne({ _id: user._id });
+
+    return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }

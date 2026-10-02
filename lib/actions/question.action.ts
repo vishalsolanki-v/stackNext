@@ -23,6 +23,7 @@ import {
 
 import dbConnect from "../mongoose";
 import { createInteraction } from "./interaction.action";
+import { createVote } from "./vote.action";
 import {
   getFallbackHotQuestions,
   getFallbackQuestion,
@@ -242,6 +243,38 @@ export const getQuestion = cache(async function getQuestion(
     return handleError(error) as ErrorResponse;
   }
 });
+
+export async function getQuestionById(
+  params: GetQuestionByIdParams
+): Promise<ActionResponse<Question>> {
+  const result = await getQuestion(params as GetQuestionParams);
+
+  if (result && typeof result === "object" && "data" in result) {
+    return result as ActionResponse<Question>;
+  }
+
+  return result as ErrorResponse;
+}
+
+export async function upvoteQuestion(
+  params: QuestionVoteParams
+): Promise<ActionResponse> {
+  return createVote({
+    targetId: params.questionId,
+    targetType: "question",
+    voteType: "upvote",
+  });
+}
+
+export async function downvoteQuestion(
+  params: QuestionVoteParams
+): Promise<ActionResponse> {
+  return createVote({
+    targetId: params.questionId,
+    targetType: "question",
+    voteType: "downvote",
+  });
+}
 
 export async function getRecommendedQuestions({
   userId,

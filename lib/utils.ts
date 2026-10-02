@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { BADGE_CRITERIA } from "@/constants";
+import { formUrlQuery, removeKeysFromUrlQuery } from "@/lib/url";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -141,6 +142,14 @@ export function formatNumber(number: number) {
     return number.toString();
   }
 }
+
+export const formatAndDivideNumber = (value: number) => formatNumber(value);
+
+export const getTimestamp = (createdAt: Date | string) =>
+  getTimeStamp(new Date(createdAt));
+
+export { formUrlQuery, removeKeysFromUrlQuery };
+export const removeKeysFromQuery = removeKeysFromUrlQuery;
 
 export const getTimeStamp = (createdAt: Date): string => {
   const date = new Date(createdAt);

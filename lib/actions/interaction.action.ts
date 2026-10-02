@@ -63,6 +63,25 @@ export async function createInteraction(
   }
 }
 
+export async function viewQuestion(
+  params: ViewQuestionParams
+): Promise<ActionResponse> {
+  if (!params.userId) {
+    return { success: true };
+  }
+
+  try {
+    return await createInteraction({
+      action: "view",
+      actionId: params.questionId,
+      actionTarget: "question",
+      authorId: params.userId,
+    });
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
 async function updateReputation(params: UpdateReputationParams) {
   const { interaction, session, performerId, authorId } = params;
   const { action, actionType } = interaction;

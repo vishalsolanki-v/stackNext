@@ -69,6 +69,8 @@ export const AskQuestionSchema = z.object({
     .max(3, { message: "Maximum of 3 tags." }),
 });
 
+export const QuestionsSchema = AskQuestionSchema;
+
 export const UserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   username: z.string().min(3, "Username must be at least 3 characters"),

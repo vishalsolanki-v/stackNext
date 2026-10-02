@@ -16,6 +16,7 @@ import {
   GetAnswersSchema,
 } from "../validations";
 import { createInteraction } from "./interaction.action";
+import { createVote } from "./vote.action";
 import { getFallbackAnswers } from "../fallback-data";
 
 export async function createAnswer(
@@ -153,6 +154,26 @@ export async function getAnswers(params: GetAnswersParams): Promise<
       data: getFallbackAnswers({ questionId, page, pageSize, filter }),
     };
   }
+}
+
+export async function upvoteAnswer(
+  params: AnswerVoteParams
+): Promise<ActionResponse> {
+  return createVote({
+    targetId: params.answerId,
+    targetType: "answer",
+    voteType: "upvote",
+  });
+}
+
+export async function downvoteAnswer(
+  params: AnswerVoteParams
+): Promise<ActionResponse> {
+  return createVote({
+    targetId: params.answerId,
+    targetType: "answer",
+    voteType: "downvote",
+  });
 }
 
 export async function deleteAnswer(

@@ -1,35 +1,31 @@
-import { Schema, models, model, Document } from 'mongoose';
+import { model, models, Schema, Document } from "mongoose";
 
-export interface IUser extends Document {
-  clerkId: string;
+export interface IUser {
   name: string;
   username: string;
   email: string;
-  password?: string;
   bio?: string;
-  picture: string;
+  image?: string;
   location?: string;
-  portfolioWebsite?: string;
+  portfolio?: string;
   reputation?: number;
-  saved: Schema.Types.ObjectId[];
-  joinedAt: Date;
 }
 
-const UserSchema = new Schema({
-  clerkId: { type: String, required: true },
-  name: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String },
-  bio: { type: String },
-  picture: { type: String, required: true },
-  location: { type: String },
-  portfolioWebsite: { type: String },
-  reputation: { type: Number, default: 0 },
-  saved: [{ type: Schema.Types.ObjectId, ref: 'Question' }], 
-  joinedAt: { type: Date, default: Date.now },
-});
+export interface IUserDoc extends IUser, Document {}
+const UserSchema = new Schema<IUser>(
+  {
+    name: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    bio: { type: String },
+    image: { type: String },
+    location: { type: String },
+    portfolio: { type: String },
+    reputation: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
 
-const User = models.User || model('User', UserSchema);
+const User = models?.User || model<IUser>("User", UserSchema);
 
 export default User;

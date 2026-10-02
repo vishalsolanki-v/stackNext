@@ -1,27 +1,69 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from "mongoose";
 
-let isConnected: boolean = false;
+import logger from "./logger";
+import "@/database";
 
-export const connectToDatabase = async () => {
-  mongoose.set('strictQuery', true);
+const MONGODB_URI = process.env.MONGODB_URI as string;
+const DATABASE_UNAVAILABLE_MESSAGE =
+  "Database is unavailable. Please try again later.";
 
-  if(!process.env.MONGODB_URL) {
-    return console.log('MISSING MONGODB_URL');
-  }
+export const isDatabaseUnavailableError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false;
+  if (error.message === DATABASE_UNAVAILABLE_MESSAGE) return true;
 
-  if (isConnected) {
-    return;
-  }
+  return (
+    /buffering timed out|server selection|network error|connection (?:closed|lost|refused)|topology.*closed/i.test(
+      `${error.name}: ${error.message}`
+    ) || isDatabaseUnavailableError(error.cause)
+  );
+};
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URL, {
-      dbName: 'vishaldevflow'
-    })
-
-    isConnected = true;
-
-    console.log('MongoDB is connected');
-  } catch (error) {
-    console.log('MongoDB connection failed', error)
-  }
+interface MongooseCache {
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
 }
+
+declare global {
+  // eslint-disable-next-line no-var
+  var mongoose: MongooseCache;
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+const dbConnect = async (): Promise<Mongoose> => {
+  if (!MONGODB_URI) {
+    throw new Error(DATABASE_UNAVAILABLE_MESSAGE);
+  }
+
+  if (cached.conn) {
+    logger.info("Using existing mongoose connection");
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(MONGODB_URI, {
+        dbName: "devflow",
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then((result) => {
+        logger.info("Connected to MongoDB");
+        return result;
+      })
+      .catch((error) => {
+        logger.error("Error connecting to MongoDB", error);
+        cached.promise = null;
+        throw new Error(DATABASE_UNAVAILABLE_MESSAGE, { cause: error });
+      });
+  }
+
+  cached.conn = await cached.promise;
+
+  return cached.conn;
+};
+
+export default dbConnect;

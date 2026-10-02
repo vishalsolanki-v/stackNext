@@ -1,191 +1,210 @@
-"use server"
+"use server";
 
-import Answer from "@/database/answer.model";
-import { connectToDatabase } from "../mongoose";
-import { AnswerVoteParams, CreateAnswerParams, DeleteAnswerParams, GetAnswersParams } from "./shared.types";
-import Question from "@/database/question.model";
+import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
-import Interaction from "@/database/interaction.model";
-import User from "@/database/user.model";
+import { after } from "next/server";
 
-export async function createAnswer(params: CreateAnswerParams) {
+import ROUTES from "@/constants/routes";
+import { Question, Vote } from "@/database";
+import Answer, { IAnswerDoc } from "@/database/answer.model";
+
+import action from "../handlers/action";
+import handleError from "../handlers/error";
+import {
+  AnswerServerSchema,
+  DeleteAnswerSchema,
+  GetAnswersSchema,
+} from "../validations";
+import { createInteraction } from "./interaction.action";
+import { getFallbackAnswers } from "../fallback-data";
+
+export async function createAnswer(
+  params: CreateAnswerParams
+): Promise<ActionResponse<IAnswerDoc>> {
+  const validationResult = await action({
+    params,
+    schema: AnswerServerSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { content, questionId } = validationResult.params!;
+  const userId = validationResult.session?.user?.id;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    connectToDatabase();
+    // check if the question exists
+    const question = await Question.findById(questionId);
+    if (!question) throw new Error("Question not found");
 
-    const { content, author, question, path } = params;
+    const [newAnswer] = await Answer.create(
+      [
+        {
+          author: userId,
+          question: questionId,
+          content,
+        },
+      ],
+      { session }
+    );
 
-    const newAnswer = await Answer.create({ content, author, question });
-    
-    // Add the answer to the question's answers array
-    const questionObject = await Question.findByIdAndUpdate(question, {
-      $push: { answers: newAnswer._id}
-    })
+    if (!newAnswer) throw new Error("Failed to create the answer");
 
-    await Interaction.create({
-      user: author,
-      action: "answer",
-      question,
-      answer: newAnswer._id,
-      tags: questionObject.tags
-    })
+    // update the question answers count
+    question.answers += 1;
+    await question.save({ session });
 
-    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 }})
+    // log the interaction
+    after(async () => {
+      await createInteraction({
+        action: "post",
+        actionId: newAnswer._id.toString(),
+        actionTarget: "answer",
+        authorId: userId as string,
+      });
+    });
 
-    revalidatePath(path)
+    await session.commitTransaction();
+
+    revalidatePath(ROUTES.QUESTION(questionId));
+
+    return { success: true, data: JSON.parse(JSON.stringify(newAnswer)) };
   } catch (error) {
-    console.log(error);
-    throw error;
+    await session.abortTransaction();
+    return handleError(error) as ErrorResponse;
+  } finally {
+    await session.endSession();
   }
 }
 
-export async function getAnswers(params: GetAnswersParams) {
+export async function getAnswers(params: GetAnswersParams): Promise<
+  ActionResponse<{
+    answers: Answer[];
+    isNext: boolean;
+    totalAnswers: number;
+  }>
+> {
+  const validationResult = await action({
+    params,
+    schema: GetAnswersSchema,
+    allowOffline: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { questionId, page = 1, pageSize = 10, filter } = params;
+
+  if (!validationResult.dbAvailable) {
+    return {
+      success: true,
+      data: getFallbackAnswers({ questionId, page, pageSize, filter }),
+    };
+  }
+
+  const skip = (Number(page) - 1) * pageSize;
+  const limit = pageSize;
+
+  let sortCriteria = {};
+
+  switch (filter) {
+    case "latest":
+      sortCriteria = { createdAt: -1 };
+      break;
+    case "oldest":
+      sortCriteria = { createdAt: 1 };
+      break;
+    case "popular":
+      sortCriteria = { upvotes: -1 };
+      break;
+    default:
+      sortCriteria = { createdAt: -1 };
+      break;
+  }
+
   try {
-    connectToDatabase();
-
-    const { questionId, sortBy, page = 1, pageSize = 10 } = params;
-
-    const skipAmount = (page - 1) * pageSize;
-
-    let sortOptions = {};
-
-    switch (sortBy) {
-      case "highestUpvotes":
-        sortOptions = { upvotes: -1 }
-        break;
-      case "lowestUpvotes":
-        sortOptions = { upvotes: 1 }
-        break;
-      case "recent":
-        sortOptions = { createdAt: -1 }
-        break;
-      case "old":
-        sortOptions = { createdAt: 1 }
-        break;
-    
-      default:
-        break;
-    }
+    const totalAnswers = await Answer.countDocuments({ question: questionId });
 
     const answers = await Answer.find({ question: questionId })
-      .populate("author", "_id clerkId name picture")
-      .sort(sortOptions)
-      .skip(skipAmount)
-      .limit(pageSize);
+      .populate("author", "_id name image")
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit);
 
-    const totalAnswer = await Answer.countDocuments({ 
-      question: questionId
-    })
+    const isNext = totalAnswers > skip + answers.length;
 
-    const isNextAnswer = totalAnswer > skipAmount + answers.length;
-
-    return { answers, isNextAnswer };
-  } catch (error) {
-    console.log(error);
-    throw error;
+    return {
+      success: true,
+      data: {
+        answers: JSON.parse(JSON.stringify(answers)),
+        isNext,
+        totalAnswers,
+      },
+    };
+  } catch {
+    return {
+      success: true,
+      data: getFallbackAnswers({ questionId, page, pageSize, filter }),
+    };
   }
 }
 
-export async function upvoteAnswer(params: AnswerVoteParams) {
-  try {
-    connectToDatabase();
+export async function deleteAnswer(
+  params: DeleteAnswerParams
+): Promise<ActionResponse> {
+  const validationResult = await action({
+    params,
+    schema: DeleteAnswerSchema,
+    authorize: true,
+  });
 
-    const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
-
-    let updateQuery = {};
-
-    if(hasupVoted) {
-      updateQuery = { $pull: { upvotes: userId }}
-    } else if (hasdownVoted) {
-      updateQuery = { 
-        $pull: { downvotes: userId },
-        $push: { upvotes: userId }
-      }
-    } else {
-      updateQuery = { $addToSet: { upvotes: userId }}
-    }
-
-    const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
-
-    if(!answer) {
-      throw new Error("Answer not found");
-    }
-
-    // Increment author's reputation
-    await User.findByIdAndUpdate(userId, { 
-      $inc: { reputation: hasupVoted ? -2 : 2 }
-    })
-
-    await User.findByIdAndUpdate(answer.author, { 
-      $inc: { reputation: hasupVoted ? -10 : 10 }
-    })
-
-
-    revalidatePath(path);
-  } catch (error) {
-    console.log(error);
-    throw error;
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
   }
-}
 
-export async function downvoteAnswer(params: AnswerVoteParams) {
+  const { answerId } = validationResult.params!;
+  const { user } = validationResult.session!;
+
   try {
-    connectToDatabase();
-
-    const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
-
-    let updateQuery = {};
-
-    if(hasdownVoted) {
-      updateQuery = { $pull: { downvote: userId }}
-    } else if (hasupVoted) {
-      updateQuery = { 
-        $pull: { upvotes: userId },
-        $push: { downvotes: userId }
-      }
-    } else {
-      updateQuery = { $addToSet: { downvotes: userId }}
-    }
-
-    const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
-
-    if(!answer) {
-      throw new Error("Answer not found");
-    }
-
-    // Increment author's reputation
-    await User.findByIdAndUpdate(userId, { 
-      $inc: { reputation: hasdownVoted ? -2 : 2 }
-    })
-
-    await User.findByIdAndUpdate(answer.author, { 
-      $inc: { reputation: hasdownVoted ? -10 : 10 }
-    })
-
-    revalidatePath(path);
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-export async function deleteAnswer(params: DeleteAnswerParams) {
-  try {
-    connectToDatabase();
-
-    const { answerId, path } = params;
-
     const answer = await Answer.findById(answerId);
+    if (!answer) throw new Error("Answer not found");
 
-    if(!answer) {
-      throw new Error("Answer not found");
-    }
+    if (answer.author.toString() !== user?.id)
+      throw new Error("You're not allowed to delete this answer");
 
-    await answer.deleteOne({ _id: answerId });
-    await Question.updateMany({ _id: answer.question }, { $pull: { answers: answerId }});
-    await Interaction.deleteMany({ answer: answerId });
+    // reduce the question answers count
+    await Question.findByIdAndUpdate(
+      answer.question,
+      { $inc: { answers: -1 } },
+      { new: true }
+    );
 
-    revalidatePath(path);
+    // delete votes associated with answer
+    await Vote.deleteMany({ actionId: answerId, actionType: "answer" });
+
+    // delete the answer
+    await Answer.findByIdAndDelete(answerId);
+
+    // log the interaction
+    after(async () => {
+      await createInteraction({
+        action: "delete",
+        actionId: answerId,
+        actionTarget: "answer",
+        authorId: user?.id as string,
+      });
+    });
+
+    revalidatePath(`/profile/${user?.id}`);
+
+    return { success: true };
   } catch (error) {
-    console.log(error);
+    return handleError(error) as ErrorResponse;
   }
 }

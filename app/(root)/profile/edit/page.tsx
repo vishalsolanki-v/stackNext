@@ -1,27 +1,24 @@
-import Profile from '@/components/forms/Profile';
-import { getUserById } from '@/lib/actions/user.action';
-import { ParamsProps } from '@/types';
-import { auth } from '@clerk/nextjs'
+import { redirect } from "next/navigation";
 
-const Page = async ({ params }: ParamsProps) => {
-  const { userId } = auth();
+import { auth } from "@/auth";
+import ProfileForm from "@/components/forms/ProfileForm";
+import ROUTES from "@/constants/routes";
+import { getUser } from "@/lib/actions/user.action";
 
-  if(!userId) return null;
+const Page = async () => {
+  const session = await auth();
+  if (!session?.user?.id) redirect(ROUTES.SIGN_IN);
 
-  const mongoUser = await getUserById({ userId })
+  const { success, data } = await getUser({ userId: session.user.id });
+  if (!success) redirect(ROUTES.SIGN_IN);
 
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">Edit Profile</h1>
-      
-      <div className="mt-9">
-        <Profile 
-          clerkId={userId}
-          user={JSON.stringify(mongoUser)}
-        />
-      </div>
-    </>
-  )
-}
 
-export default Page
+      <ProfileForm user={data?.user as User} />
+    </>
+  );
+};
+
+export default Page;

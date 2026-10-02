@@ -1,0 +1,176 @@
+{
+  "users": [
+    {
+      "_id": "65a000000000000000000001",
+      "name": "Maya Chen",
+      "username": "mayacodes",
+      "email": "maya@example.dev",
+      "bio": "Frontend engineer exploring accessible interfaces and resilient web apps.",
+      "location": "Toronto, Canada",
+      "portfolio": "https://example.dev/maya",
+      "reputation": 128,
+      "createdAt": "2025-03-12T10:00:00.000Z"
+    },
+    {
+      "_id": "65a000000000000000000002",
+      "name": "Noah Patel",
+      "username": "noahbuilds",
+      "email": "noah@example.dev",
+      "bio": "Full-stack developer focused on TypeScript, APIs, and thoughtful tooling.",
+      "location": "Austin, USA",
+      "reputation": 84,
+      "createdAt": "2025-05-08T10:00:00.000Z"
+    },
+    {
+      "_id": "65a000000000000000000003",
+      "name": "Ava Williams",
+      "username": "avawrites",
+      "email": "ava@example.dev",
+      "bio": "I enjoy making complex systems easier to understand.",
+      "location": "London, UK",
+      "reputation": 56,
+      "createdAt": "2025-06-01T10:00:00.000Z"
+    }
+  ],
+  "tags": [
+    { "_id": "65b000000000000000000001", "name": "javascript", "questions": 2, "createdAt": "2025-02-01T10:00:00.000Z" },
+    { "_id": "65b000000000000000000002", "name": "react", "questions": 2, "createdAt": "2025-02-02T10:00:00.000Z" },
+    { "_id": "65b000000000000000000003", "name": "typescript", "questions": 2, "createdAt": "2025-02-03T10:00:00.000Z" },
+    { "_id": "65b000000000000000000004", "name": "nextjs", "questions": 1, "createdAt": "2025-02-04T10:00:00.000Z" }
+  ],
+  "questions": [
+    {
+      "_id": "65c000000000000000000001",
+      "title": "How can I keep a React list responsive with thousands of rows?",
+      "content": "I am building an activity view that can contain several thousand rows. Rendering the full list makes scrolling feel sluggish. What approaches work well for keeping the interface responsive while preserving keyboard navigation and screen-reader support?",
+      "authorId": "65a000000000000000000001",
+      "tagIds": ["65b000000000000000000002", "65b000000000000000000003"],
+      "views": 846,
+      "upvotes": 24,
+      "downvotes": 1,
+      "answers": 2,
+      "createdAt": "2025-08-18T12:00:00.000Z"
+    },
+    {
+      "_id": "65c000000000000000000002",
+      "title": "What is a safe way to retry failed fetch requests?",
+      "content": "Our client occasionally gets transient network errors when requesting a JSON API. I want to retry safely without duplicating writes or overwhelming the service. How should I structure retries, timeouts, and backoff for read requests?",
+      "authorId": "65a000000000000000000002",
+      "tagIds": ["65b000000000000000000001", "65b000000000000000000003"],
+      "views": 592,
+      "upvotes": 18,
+      "downvotes": 0,
+      "answers": 1,
+      "createdAt": "2025-09-04T09:30:00.000Z"
+    },
+    {
+      "_id": "65c000000000000000000003",
+      "title": "How do I share typed metadata between Next.js layouts and pages?",
+      "content": "I have route metadata and page data that both need a small set of typed values. I would like to avoid repeating the same query while keeping the page output predictable. Which Next.js patterns are a good fit?",
+      "authorId": "65a000000000000000000003",
+      "tagIds": ["65b000000000000000000004", "65b000000000000000000003"],
+      "views": 391,
+      "upvotes": 13,
+      "downvotes": 0,
+      "answers": 0,
+      "createdAt": "2025-09-22T15:45:00.000Z"
+    }
+  ],
+  "answers": [
+    {
+      "_id": "65d000000000000000000001",
+      "questionId": "65c000000000000000000001",
+      "authorId": "65a000000000000000000002",
+      "content": "For large collections, windowing is usually the biggest win: render only the visible range plus a small overscan. Libraries such as TanStack Virtual handle measurement and scrolling, while your row components still need stable keys and semantic structure. Keep focus behavior explicit when rows mount and unmount, and test with keyboard and assistive technology. If the data can be grouped or paged, that can further reduce the amount of work.\n\nI would first profile the list, then add virtualization only where it improves the real bottleneck.",
+      "upvotes": 12,
+      "downvotes": 0,
+      "createdAt": "2025-08-19T08:00:00.000Z"
+    },
+    {
+      "_id": "65d000000000000000000002",
+      "questionId": "65c000000000000000000001",
+      "authorId": "65a000000000000000000003",
+      "content": "Also check whether each row causes broad state updates. Memoizing expensive row work can help, but virtualization generally matters more once the DOM itself becomes large. Make sure the list has an accessible label and that the virtualized container exposes an appropriate scroll region.",
+      "upvotes": 7,
+      "downvotes": 0,
+      "createdAt": "2025-08-20T14:00:00.000Z"
+    },
+    {
+      "_id": "65d000000000000000000003",
+      "questionId": "65c000000000000000000002",
+      "authorId": "65a000000000000000000001",
+      "content": "Use retries only for requests that are safe to repeat, such as GET requests, and cap the number of attempts. An exponential delay with jitter helps avoid synchronized retry spikes. Set a request timeout, honor server retry guidance when available, and do not retry validation or authorization failures. For mutations, use an idempotency key or avoid automatic retries unless the endpoint guarantees idempotence.",
+      "upvotes": 9,
+      "downvotes": 0,
+      "createdAt": "2025-09-05T11:15:00.000Z"
+    }
+  ],
+  "questionTopics": [
+    "How should a React app organize shared form validation?",
+    "When should a TypeScript project use discriminated unions?",
+    "How can I avoid stale data in a Next.js route cache?",
+    "What is a reliable pattern for paginating a REST endpoint?",
+    "How do I test keyboard navigation in a modal dialog?",
+    "How can a Node.js service handle graceful shutdown?",
+    "What should I consider before adding Redis caching?",
+    "How do I model many-to-many relationships in MongoDB?",
+    "What is the safest way to validate uploaded files?",
+    "How can I reduce layout shift in a dashboard?",
+    "How should an API represent validation errors?",
+    "How can I make a search input responsive without excess requests?",
+    "When is server-side rendering useful for a data-heavy page?",
+    "How do I handle optimistic updates with rollback?",
+    "What is a maintainable way to share design tokens?",
+    "How can I improve bundle size in a Next.js application?",
+    "How should I structure integration tests for an API?",
+    "What are practical ways to prevent duplicate form submissions?",
+    "How can I add rate limiting to a public endpoint?",
+    "How should a background worker retry failed jobs?",
+    "How do I safely rotate credentials in a deployed service?",
+    "What is the best way to handle time zones in a database?",
+    "How can I keep a long-running table accessible?",
+    "How should I design cursor-based pagination?",
+    "How can I debug a hydration mismatch in React?",
+    "What is a useful boundary for splitting a React component?",
+    "How do I validate environment variables at startup?",
+    "How should I handle network timeouts in a browser client?",
+    "What is the right way to version a public API?",
+    "How can I make a Node.js endpoint stream large responses?",
+    "How do I prevent an N plus one query pattern?",
+    "What should I log when a request fails unexpectedly?",
+    "How can I make a responsive grid work with long labels?",
+    "How should I organize permissions for a multi-tenant app?",
+    "How do I migrate a MongoDB collection without downtime?",
+    "What is a good strategy for testing date-dependent code?",
+    "How can I improve image loading performance in Next.js?",
+    "How should a service handle idempotent payment requests?",
+    "When should I use a database transaction?",
+    "How can I reduce unnecessary renders in a large form?",
+    "What is a safe approach to parsing user-provided URLs?",
+    "How do I monitor slow database queries in production?",
+    "How should I structure reusable middleware in Express?",
+    "What is the best way to manage feature flags?",
+    "How can I build an accessible autocomplete component?",
+    "How should I cache data that changes at different rates?",
+    "How can I keep local development configuration consistent?",
+    "What belongs in a useful pull request checklist?",
+    "How do I design a resilient third-party API integration?",
+    "How should I handle partial failures in a distributed workflow?"
+  ],
+  "additionalTagNames": [
+    "react-native", "vue", "angular", "svelte", "nodejs", "express", "nestjs", "graphql", "rest-api", "mongodb", "postgresql", "redis", "prisma", "docker", "kubernetes", "aws", "azure", "vercel", "git", "github-actions", "ci-cd", "testing", "jest", "vitest", "playwright", "cypress", "accessibility", "css", "tailwindcss", "html", "web-performance", "security", "oauth", "authentication", "authorization", "api-design", "caching", "networking", "python", "django", "golang", "rust", "java", "spring-boot", "sql", "data-structures", "algorithms", "architecture", "microservices"
+  ],
+  "jobTitles": [
+    "Frontend Engineer", "Senior Frontend Engineer", "React Developer", "UI Engineer", "Web Accessibility Engineer", "Full Stack Engineer", "Senior Full Stack Engineer", "TypeScript Developer", "Next.js Engineer", "Node.js Backend Engineer", "Backend Engineer", "Senior Backend Engineer", "API Platform Engineer", "Developer Experience Engineer", "Design Systems Engineer", "Software Engineer", "Senior Software Engineer", "Staff Software Engineer", "Principal Software Engineer", "Mobile Engineer", "React Native Developer", "iOS Engineer", "Android Engineer", "Site Reliability Engineer", "Platform Engineer", "Cloud Infrastructure Engineer", "DevOps Engineer", "Security Engineer", "Application Security Engineer", "Data Engineer", "Analytics Engineer", "Machine Learning Engineer", "QA Automation Engineer", "Software Test Engineer", "Product Engineer", "Technical Lead", "Engineering Manager", "Solutions Engineer", "Integration Engineer", "Database Engineer", "Cloud Application Developer", "Open Source Program Engineer", "Search Engineer", "Performance Engineer", "Observability Engineer", "Developer Advocate", "Technical Support Engineer", "Graduate Software Engineer", "Associate Web Developer", "Remote Software Engineer"
+  ],
+  "profileFirstNames": ["Maya", "Noah", "Ava", "Leo", "Zoe", "Ethan", "Priya", "Milo", "Nina", "Omar"],
+  "profileLastNames": ["Chen", "Patel", "Williams", "Kim", "Garcia", "Singh", "Brown", "Davis", "Miller", "Wilson"],
+  "jobCompanies": ["Northstar Labs", "Brightline Systems", "Cedar Works", "Orbit Software", "Signal Foundry", "Fieldnote Tech", "Open Harbor", "Pinecone Digital", "Copperleaf Cloud", "Bluebird Tools"],
+  "answerTemplates": [
+    "Start by measuring the current behavior, then choose the smallest change that addresses the bottleneck. Keep the contract explicit and add a focused test for the edge case.",
+    "A practical approach is to separate input validation from the operation itself. Return a consistent error shape and make retries safe only when the operation is idempotent.",
+    "Prefer the built-in framework mechanism where possible, and verify the behavior at the boundary where data enters the system. This keeps the implementation easier to maintain.",
+    "The tradeoff depends on data size and update frequency. Begin with a simple implementation, collect metrics, and add caching or concurrency only when the evidence points there.",
+    "Make the state transition explicit and test both the success and failure paths. In particular, check keyboard behavior, loading states, and what happens when the network is unavailable."
+  ]
+}

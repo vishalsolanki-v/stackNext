@@ -1,66 +1,61 @@
-import Filter from '@/components/shared/Filter'
-import Pagination from '@/components/shared/Pagination'
-import LocalSearchbar from '@/components/shared/search/LocalSearchbar'
-import { UserFilters } from '@/constants/filters'
-import { getAllUsers } from '@/lib/actions/user.action'
-import { SearchParamsProps } from '@/types'
-import Link from 'next/link'
-import type { Metadata } from 'next';
-import dynamic from 'next/dynamic'
+import UserCard from "@/components/cards/UserCard";
+import DataRenderer from "@/components/DataRenderer";
+import CommonFilter from "@/components/filters/CommonFilter";
+import Pagination from "@/components/Pagination";
+import LocalSearch from "@/components/search/LocalSearch";
+import { UserFilters } from "@/constants/filters";
+import ROUTES from "@/constants/routes";
+import { EMPTY_USERS } from "@/constants/states";
+import { getUsers } from "@/lib/actions/user.action";
 
-export const metadata: Metadata = {
-  title: 'Community | Vishal Devflow',
-}
+const Community = async ({ searchParams }: RouteParams) => {
+  const { page, pageSize, query, filter } = await searchParams;
 
-const Page = async ({ searchParams }: SearchParamsProps) => {
-  const result = await getAllUsers({
-    searchQuery: searchParams.q,
-    filter: searchParams.filter,
-    page: searchParams.page ? +searchParams.page : 1,
-  })
-  const UserCard = dynamic(() => import('@/components/cards/UserCard'), { ssr: false })
+  const { success, data, error } = await getUsers({
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
+    query,
+    filter,
+  });
+
+  const { users, isNext } = data || {};
+
   return (
-    <>
-      <h1 className="h1-bold text-dark100_light900">All Users</h1> 
+    <div>
+      <h1 className="h1-bold text-dark100_light900">All Users</h1>
 
-        <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
-          <LocalSearchbar 
-            route="/community"
-            iconPosition="left"
-            imgSrc="/assets/icons/search.svg"
-            placeholder="Search for amazing minds"
-            otherClasses="flex-1"
-          />
+      <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
+        <LocalSearch
+          route={ROUTES.COMMUNITY}
+          iconPosition="left"
+          imgSrc="/icons/search.svg"
+          placeholder="There are some great devs here!"
+          otherClasses="flex-1"
+        />
 
-          <Filter
-            filters={UserFilters}
-            otherClasses="min-h-[56px] sm:min-w-[170px]"
-          />
-      </div>
-
-      <section className="mt-12 flex flex-wrap gap-4">
-        {result.users.length > 0 ? (
-          result.users.map((user)=> (
-            <UserCard key={user._id} user={user} />
-          ))
-        ) : (
-          <div className="paragraph-regular text-dark200_light800 mx-auto max-w-4xl text-center">
-            <p>No users yet</p>
-            <Link href="/sign-up" className="mt-2 font-bold text-accent-blue">
-              Join to be the first!
-            </Link>
-          </div>
-        )}
-      </section>
-
-      <div className="mt-10">
-        <Pagination 
-          pageNumber={searchParams?.page ? +searchParams.page : 1}
-          isNext={result.isNext}
+        <CommonFilter
+          filters={UserFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
         />
       </div>
-    </>
-  )
-}
 
-export default Page
+      <DataRenderer
+        success={success}
+        error={error}
+        data={users}
+        empty={EMPTY_USERS}
+        render={(users) => (
+          <div className="mt-12 flex flex-wrap gap-5">
+            {users.map((user) => (
+              <UserCard key={user._id} {...user} />
+            ))}
+          </div>
+        )}
+      />
+
+      <Pagination page={page} isNext={isNext || false} />
+    </div>
+  );
+};
+
+export default Community;

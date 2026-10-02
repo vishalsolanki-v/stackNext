@@ -1,135 +1,226 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import qs from "query-string"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 import { BADGE_CRITERIA } from "@/constants";
-import { BadgeCounts } from "@/types";
- 
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-export const getTimestamp = (createdAt: Date): string => {
+export function getDeviconClassName(techName: string) {
+  const normalizedTech = techName.replace(/[ .]/g, "").toLowerCase();
+
+  // Dictionary mapping possible technology names to Devicon class names
+  const techMap: { [key: string]: string } = {
+    // JavaScript variations
+    javascript: "devicon-javascript-plain",
+    js: "devicon-javascript-plain",
+
+    // TypeScript variations
+    typescript: "devicon-typescript-plain",
+    ts: "devicon-typescript-plain",
+
+    // React variations
+    react: "devicon-react-original",
+    reactjs: "devicon-react-original",
+
+    // Next.js variations
+    nextjs: "devicon-nextjs-plain",
+    next: "devicon-nextjs-plain",
+
+    // Node.js variations
+    nodejs: "devicon-nodejs-plain",
+    node: "devicon-nodejs-plain",
+
+    // Bun.js variations
+    bun: "devicon-bun-plain",
+    bunjs: "devicon-bun-plain",
+
+    // Deno.js variations
+    deno: "devicon-denojs-original",
+    denojs: "devicon-denojs-plain",
+
+    // Python variations
+    python: "devicon-python-plain",
+
+    // Java variations
+    java: "devicon-java-plain",
+
+    // C++ variations
+    "c++": "devicon-cplusplus-plain",
+    cpp: "devicon-cplusplus-plain",
+
+    // C# variations
+    "c#": "devicon-csharp-plain",
+    csharp: "devicon-csharp-plain",
+
+    // PHP variations
+    php: "devicon-php-plain",
+
+    // HTML variations
+    html: "devicon-html5-plain",
+    html5: "devicon-html5-plain",
+
+    // CSS variations
+    css: "devicon-css3-plain",
+    css3: "devicon-css3-plain",
+
+    // Git variations
+    git: "devicon-git-plain",
+
+    // Docker variations
+    docker: "devicon-docker-plain",
+
+    // MongoDB variations
+    mongodb: "devicon-mongodb-plain",
+    mongo: "devicon-mongodb-plain",
+
+    // MySQL variations
+    mysql: "devicon-mysql-plain",
+
+    // PostgreSQL variations
+    postgresql: "devicon-postgresql-plain",
+    postgres: "devicon-postgresql-plain",
+
+    // AWS variations
+    aws: "devicon-amazonwebservices-original",
+    "amazon web services": "devicon-amazonwebservices-original",
+
+    // Tailwind CSS variations
+    tailwind: "devicon-tailwindcss-original",
+    tailwindcss: "devicon-tailwindcss-original",
+  };
+
+  return `${techMap[normalizedTech] || "devicon-devicon-plain"} colored`;
+}
+
+export function getTechDescription(techName: string): string {
+  const normalizedTech = techName.replace(/[ .]/g, "").toLowerCase();
+
+  // Mapping technology names to descriptions
+  const techDescriptionMap: { [key: string]: string } = {
+    javascript:
+      "JavaScript is a powerful language for building dynamic, interactive, and modern web applications.",
+    typescript:
+      "TypeScript adds strong typing to JavaScript, making it great for scalable and maintainable applications.",
+    react:
+      "React is a popular library for building fast, component-based user interfaces and web applications.",
+    nextjs:
+      "Next.js is a React framework for building fast, SEO-friendly, and production-grade web applications.",
+    nodejs:
+      "Node.js is a runtime for building fast and scalable server-side applications using JavaScript.",
+    python:
+      "Python is a beginner-friendly language known for its versatility and simplicity in various fields.",
+    java: "Java is a versatile, cross-platform language widely used in enterprise and Android development.",
+    "c++":
+      "C++ is a high-performance language ideal for system programming, games, and large-scale applications.",
+    git: "Git is a version control system that helps developers track changes and collaborate on code efficiently.",
+    docker:
+      "Docker simplifies app deployment by containerizing environments, ensuring consistency across platforms.",
+    mongodb:
+      "MongoDB is a flexible NoSQL database ideal for handling unstructured data and scalable applications.",
+    mysql:
+      "MySQL is a popular open-source relational database management system known for its stability and performance.",
+    postgresql:
+      "PostgreSQL is a powerful open-source SQL database known for its scalability and robustness.",
+    aws: "Amazon Web Services (AWS) is a cloud computing platform that offers a wide range of services for building, deploying, and managing web and mobile applications.",
+  };
+
+  return (
+    techDescriptionMap[normalizedTech] ||
+    `${techName} is a technology or tool widely used in software development, providing valuable features and capabilities.`
+  );
+}
+
+export function formatNumber(number: number) {
+  if (number >= 1000000) {
+    return (number / 1000000).toFixed(1) + "M";
+  } else if (number >= 1000) {
+    return (number / 1000).toFixed(1) + "K";
+  } else {
+    return number.toString();
+  }
+}
+
+export const getTimeStamp = (createdAt: Date): string => {
+  const date = new Date(createdAt);
   const now = new Date();
-  const timeDifference = now.getTime() - createdAt.getTime();
 
-  // Define time intervals in milliseconds
-  const minute = 60 * 1000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  const week = 7 * day;
-  const month = 30 * day;
-  const year = 365 * day;
-
-  if (timeDifference < minute) {
-    const seconds = Math.floor(timeDifference / 1000);
-    return `${seconds} ${seconds === 1 ? 'second' : 'seconds'} ago`;
-  } else if (timeDifference < hour) {
-    const minutes = Math.floor(timeDifference / minute);
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-  } else if (timeDifference < day) {
-    const hours = Math.floor(timeDifference / hour);
-    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-  } else if (timeDifference < week) {
-    const days = Math.floor(timeDifference / day);
-    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-  } else if (timeDifference < month) {
-    const weeks = Math.floor(timeDifference / week);
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-  } else if (timeDifference < year) {
-    const months = Math.floor(timeDifference / month);
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-  } else {
-    const years = Math.floor(timeDifference / year);
-    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+  const diffMilliseconds = now.getTime() - date.getTime();
+  const diffSeconds = Math.round(diffMilliseconds / 1000);
+  if (diffSeconds < 60) {
+    return `${diffSeconds} seconds ago`;
   }
+
+  const diffMinutes = Math.round(diffSeconds / 60);
+  if (diffMinutes < 60) {
+    return `${diffMinutes} mins ago`;
+  }
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) {
+    return `${diffHours} hours ago`;
+  }
+
+  const diffDays = Math.round(diffHours / 24);
+
+  return `${diffDays} days ago`;
 };
 
-export const formatAndDivideNumber = (num: number): string => {
-  if (num >= 1000000) {
-    const formattedNum = (num / 1000000).toFixed(1);
-    return `${formattedNum}M`;
-  } else if (num >= 1000) {
-    const formattedNum = (num / 1000).toFixed(1);
-    return `${formattedNum}K`;
-  } else {
-    return num.toString();
-  }
-};
-
-export const getJoinedDate = (date: Date): string => {
-  // Extract the month and year from the Date object
-  const month = date.toLocaleString('default', { month: 'long' });
-  const year = date.getFullYear();
-
-  // Create the joined date string (e.g., "September 2023")
-  const joinedDate = `${month} ${year}`;
-
-  return joinedDate;
-}
-
-interface UrlQueryParams {
-  params: string;
-  key: string;
-  value: string | null;
-}
-
-export const formUrlQuery = ({ params, key, value}: UrlQueryParams) => {
-  const currentUrl = qs.parse(params);
-
-  currentUrl[key] = value;
-
-  return qs.stringifyUrl({
-    url: window.location.pathname,
-    query: currentUrl,
-  },
-  { skipNull: true})
-}
-
-interface RemoveUrlQueryParams {
-  params: string;
-  keysToRemove: string[];
-}
-
-export const removeKeysFromQuery = ({ params, keysToRemove}: RemoveUrlQueryParams) => {
-  const currentUrl = qs.parse(params);
-
-  keysToRemove.forEach((key) => {
-    delete currentUrl[key];
-  })
-
-  return qs.stringifyUrl({
-    url: window.location.pathname,
-    query: currentUrl,
-  },
-  { skipNull: true})
-}
-
-interface BadgeParam {
+export function assignBadges(params: {
   criteria: {
     type: keyof typeof BADGE_CRITERIA;
     count: number;
-  }[]
-}
-
-export const assignBadges = (params: BadgeParam) => {
-  const badgeCounts: BadgeCounts = {
+  }[];
+}) {
+  const badgeCounts: Badges = {
     GOLD: 0,
     SILVER: 0,
     BRONZE: 0,
-  }
+  };
 
   const { criteria } = params;
 
   criteria.forEach((item) => {
     const { type, count } = item;
-    const badgeLevels: any = BADGE_CRITERIA[type];
+    const badgeLevels = BADGE_CRITERIA[type];
 
-    Object.keys(badgeLevels).forEach((level: any) => {
-      if(count >= badgeLevels[level]) {
-        badgeCounts[level as keyof BadgeCounts] +=1 ;
+    Object.keys(badgeLevels).forEach((level) => {
+      if (count >= badgeLevels[level as keyof typeof badgeLevels]) {
+        badgeCounts[level as keyof Badges] += 1;
       }
-    })
-  })
+    });
+  });
 
   return badgeCounts;
+}
+
+export function processJobTitle(title: string | undefined | null): string {
+  // Check if title is undefined or null
+  if (title === undefined || title === null) {
+    return "No Job Title";
+  }
+
+  // Split the title into words
+  const words = title.split(" ");
+
+  // Filter out undefined or null and other unwanted words
+  const validWords = words.filter((word) => {
+    return (
+      word !== undefined &&
+      word !== null &&
+      word.toLowerCase() !== "undefined" &&
+      word.toLowerCase() !== "null"
+    );
+  });
+
+  // If no valid words are left, return the general title
+  if (validWords.length === 0) {
+    return "No Job Title";
+  }
+
+  // Join the valid words to create the processed title
+  const processedTitle = validWords.join(" ");
+
+  return processedTitle;
 }

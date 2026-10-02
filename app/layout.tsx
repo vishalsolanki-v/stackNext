@@ -1,54 +1,63 @@
-/* eslint-disable camelcase */
-import React from 'react'
-import { ClerkProvider } from '@clerk/nextjs'
-import { Inter, Space_Grotesk } from 'next/font/google'
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import { SessionProvider } from "next-auth/react";
+import { ReactNode } from "react";
 
-import './globals.css';
-import '../styles/prism.css';
-import { ThemeProvider } from '@/context/ThemeProvider';
+import "./globals.css";
+import { auth } from "@/auth";
+import { Toaster } from "@/components/ui/toaster";
+import ThemeProvider from "@/context/Theme";
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-inter'
-})
+const inter = localFont({
+  src: "./fonts/InterVF.ttf",
+  variable: "--font-inter",
+  weight: "100 200 300 400 500 700 800 900",
+});
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-spaceGrotesk'
-})
- 
+const spaceGrotesk = localFont({
+  src: "./fonts/SpaceGroteskVF.ttf",
+  variable: "--font-space-grotesk",
+  weight: "300 400 500 700",
+});
+
 export const metadata: Metadata = {
-    title: 'Vishal Dev Flow',
-    description: 'hey there welcome to vishal dev flow',
-    icons: {
-        icon: '/public/assets/images/site-logo.svg'
-    }
-}
- 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+  title: "DevFlow",
+  description:
+    "A community-driven platform for asking and answering programming questions. Get help, share knowledge, and collaborate with developers from around the world. Explore topics in web development, mobile app development, algorithms, data structures, and more.",
+  icons: {
+    icon: "/images/site-logo.svg",
+  },
+};
+
+const RootLayout = async ({ children }: { children: ReactNode }) => {
+  const session = await auth();
+
   return (
-      <html lang="en">
-        <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
-          <ClerkProvider
-            appearance={{
-              elements: {
-                formButtonPrimary: 'primary-gradient',
-                footerActionLink: 'primary-text-gradient hover:text-primary-500'
-              }
-            }}
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+        />
+      </head>
+      <SessionProvider session={session}>
+        <body
+          className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
           >
-            <ThemeProvider>
-              {children}
-            </ThemeProvider>
-          </ClerkProvider>
+            {children}
+          </ThemeProvider>
+          <Toaster />
         </body>
-      </html>
-  )
-}
+      </SessionProvider>
+    </html>
+  );
+};
+
+export default RootLayout;

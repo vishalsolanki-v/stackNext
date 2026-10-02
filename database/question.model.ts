@@ -1,29 +1,32 @@
-import { Schema, models, model, Document } from 'mongoose';
+import { model, models, Schema, Types, Document } from "mongoose";
 
-export interface IQuestion extends Document {
+export interface IQuestion {
   title: string;
   content: string;
-  tags: Schema.Types.ObjectId[];
+  tags: Types.ObjectId[];
   views: number;
-  upvotes: Schema.Types.ObjectId[];
-  downvotes: Schema.Types.ObjectId[];
-  author: Schema.Types.ObjectId;
-  answers: Schema.Types.ObjectId[];
-  createdAt: Date;
+  upvotes: number;
+  downvotes: number;
+  answers: number;
+  author: Types.ObjectId;
 }
 
-const QuestionSchema = new Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
-  views: { type: Number, default: 0 },
-  upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  author: { type: Schema.Types.ObjectId, ref: 'User' },
-  answers: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
-  createdAt: { type: Date, default: Date.now }
-})
+export interface IQuestionDoc extends IQuestion, Document {}
+const QuestionSchema = new Schema<IQuestion>(
+  {
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
+    views: { type: Number, default: 0 },
+    upvotes: { type: Number, default: 0 },
+    downvotes: { type: Number, default: 0 },
+    answers: { type: Number, default: 0 },
+    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  },
+  { timestamps: true }
+);
 
-const Question = models.Question || model('Question', QuestionSchema);
+const Question =
+  models?.Question || model<IQuestion>("Question", QuestionSchema);
 
 export default Question;

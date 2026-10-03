@@ -37,7 +37,7 @@ const TagCard = ({
 
   const Content = (
     <>
-      <Badge className="subtle-medium background-light800_dark300 text-light400_light500 flex flex-row gap-2 rounded-md border-none px-4 py-2 uppercase">
+      <Badge className="subtle-medium flex flex-row gap-2 rounded-md border-none bg-light-800 px-4 py-2 uppercase text-dark-500 dark:bg-dark-300 dark:text-light-500">
         <div className="flex-center space-x-2">
           <i className={`${iconClass} text-sm`}></i>
           <span>{name}</span>

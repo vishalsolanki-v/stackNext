@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import TagCard from "@/components/cards/TagCard";
 import DataRenderer from "@/components/DataRenderer";
 import CommonFilter from "@/components/filters/CommonFilter";
@@ -7,6 +9,13 @@ import { TagFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
 import { EMPTY_TAGS } from "@/constants/states";
 import { getTags } from "@/lib/actions/tag.action";
+
+export const metadata: Metadata = {
+  title: "Developer Tags",
+  description:
+    "Browse programming languages, tools, and technologies discussed by the VishalDevFlow developer community.",
+  alternates: { canonical: "/tags" },
+};
 
 const Tags = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;

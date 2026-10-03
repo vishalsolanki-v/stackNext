@@ -1,0 +1,20 @@
+# VishalDevFlow
+
+> VishalDevFlow is a developer community for asking programming questions, sharing answers, and discovering useful knowledge.
+
+## Public pages
+
+- [Home](https://vishaldevflow.vercel.app/): Browse community programming questions.
+- [Tags](https://vishaldevflow.vercel.app/tags): Explore topics, languages, and technologies.
+- [Community](https://vishaldevflow.vercel.app/community): Browse developer profiles.
+- [Jobs](https://vishaldevflow.vercel.app/jobs): Explore developer job listings.
+
+## Dynamic content
+
+- Questions: `https://vishaldevflow.vercel.app/questions/{questionId}`
+- Tag topics: `https://vishaldevflow.vercel.app/tags/{tagId}`
+
+## Discovery
+
+- [Sitemap](https://vishaldevflow.vercel.app/sitemap.xml)
+- [Robots rules](https://vishaldevflow.vercel.app/robots.txt)

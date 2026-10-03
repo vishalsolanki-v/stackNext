@@ -14,9 +14,10 @@ import { EMPTY_QUESTION } from "@/constants/states";
 import { getQuestions } from "@/lib/actions/question.action";
 
 export const metadata: Metadata = {
-  title: "Dev Overflow | Home",
+  title: "Home",
   description:
-    "Discover different programming questions and answers with recommendations from the community.",
+    "Explore questions, answers, and recommendations from the VishalDevFlow developer community.",
+  alternates: { canonical: "/" },
 };
 
 async function Home({ searchParams }: RouteParams) {

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import QuestionCard from "@/components/cards/QuestionCard";
 import DataRenderer from "@/components/DataRenderer";
 import Pagination from "@/components/Pagination";
@@ -5,6 +7,39 @@ import LocalSearch from "@/components/search/LocalSearch";
 import ROUTES from "@/constants/routes";
 import { EMPTY_QUESTION } from "@/constants/states";
 import { getTagQuestions } from "@/lib/actions/tag.action";
+import { SITE_URL } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: RouteParams): Promise<Metadata> {
+  const { id } = await params;
+  const { success, data } = await getTagQuestions({
+    tagId: id,
+    page: 1,
+    pageSize: 1,
+  });
+
+  if (!success || !data?.tag) {
+    return {
+      title: "Tag not found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = `${data.tag.name} Questions`;
+  const description = `Browse developer questions and answers about ${data.tag.name} on VishalDevFlow.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/tags/${id}` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/tags/${id}`,
+    },
+  };
+}
 
 const Page = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;

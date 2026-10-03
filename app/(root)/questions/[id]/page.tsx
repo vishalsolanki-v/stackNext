@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
@@ -9,6 +10,7 @@ import { Preview } from "@/components/editor/Preview";
 import AnswerForm from "@/components/forms/AnswerForm";
 import Metric from "@/components/Metric";
 import SaveQuestion from "@/components/questions/SaveQuestion";
+import JsonLd from "@/components/seo/JsonLd";
 import UserAvatar from "@/components/UserAvatar";
 import Votes from "@/components/votes/Votes";
 import ROUTES from "@/constants/routes";
@@ -16,8 +18,8 @@ import { getAnswers } from "@/lib/actions/answer.action";
 import { hasSavedQuestion } from "@/lib/actions/collection.action";
 import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { hasVoted } from "@/lib/actions/vote.action";
+import { SITE_URL } from "@/lib/seo";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
-import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
@@ -36,10 +38,19 @@ export async function generateMetadata({
   return {
     title: question.title,
     description: question.content.slice(0, 100),
+    alternates: {
+      canonical: `${SITE_URL}/questions/${id}`,
+    },
+    openGraph: {
+      type: "article",
+      url: `${SITE_URL}/questions/${id}`,
+      title: question.title,
+      description: question.content.slice(0, 160),
+    },
     twitter: {
       card: "summary_large_image",
       title: question.title,
-      description: question.content.slice(0, 100),
+      description: question.content.slice(0, 160),
     },
   };
 }
@@ -76,9 +87,40 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   });
 
   const { author, createdAt, answers, views, tags, content, title } = question;
+  const questionSchema = {
+    "@context": "https://schema.org",
+    "@type": "QAPage",
+    mainEntity: {
+      "@type": "Question",
+      name: title,
+      text: content,
+      dateCreated: new Date(createdAt).toISOString(),
+      author: {
+        "@type": "Person",
+        name: author.name,
+      },
+      answerCount: answersResult?.totalAnswers ?? answers,
+      upvoteCount: question.upvotes,
+      ...(answersResult?.answers.length
+        ? {
+            suggestedAnswer: answersResult.answers.map((answer) => ({
+              "@type": "Answer",
+              text: answer.content,
+              dateCreated: new Date(answer.createdAt).toISOString(),
+              upvoteCount: answer.upvotes,
+              author: {
+                "@type": "Person",
+                name: answer.author.name,
+              },
+            })),
+          }
+        : {}),
+    },
+  };
 
   return (
     <>
+      <JsonLd data={questionSchema} />
       <div className="flex-start w-full flex-col">
         <div className="flex w-full flex-col-reverse justify-between">
           <div className="flex items-center justify-start gap-1">

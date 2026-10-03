@@ -30,15 +30,31 @@ export default function OpenGraphImage() {
             width: "100%",
           }}
         >
-          <div style={{ color: "#ff7000", fontSize: 34, fontWeight: 700 }}>
+          <div
+            style={{
+              color: "#ff7000",
+              display: "flex",
+              fontSize: 34,
+              fontWeight: 700,
+            }}
+          >
             VISHALDEVFLOW
           </div>
-          <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.1 }}>
-            Build knowledge.
-            <br />
-            Share answers.
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              fontSize: 68,
+              fontWeight: 700,
+              lineHeight: 1.1,
+            }}
+          >
+            <div style={{ display: "flex" }}>Build knowledge.</div>
+            <div style={{ display: "flex" }}>Share answers.</div>
           </div>
-          <div style={{ color: "#dce3f1", fontSize: 30 }}>
+          <div
+            style={{ color: "#dce3f1", display: "flex", fontSize: 30 }}
+          >
             A community for developers to learn and grow.
           </div>
         </div>
